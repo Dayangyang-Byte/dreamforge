@@ -1,0 +1,29 @@
+{
+  "name": "image-gen-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:web": "vite --host 127.0.0.1 --port 5177",
+    "dev:api": "node server/index.js",
+    "start": "node server/index.js",
+    "migrate": "node server/migrate-json-to-sqlite.js",
+    "build": "vite build",
+    "test:guards": "node server/quality-guards.js",
+    "preview": "vite preview --host 127.0.0.1 --port 4177"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
+    "express": "^5.1.0",
+    "lucide-react": "^0.468.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.35.3",
+    "vite": "^6.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+_tmp_
+_admin_*
+image-gen-studio-*.tgz
+image-gen-studio-*.zip
+*.tgz
+*.zip
+.DS_Store
+Thumbs.db
