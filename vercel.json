@@ -9,6 +9,8 @@
     { "src": "/pay/(.*)", "dest": "/pay/$1" },
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/robots.txt" },
+    { "src": "/en/faq", "dest": "/en/faq.html" },
+    { "src": "/en/prompts", "dest": "/en/prompts.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
