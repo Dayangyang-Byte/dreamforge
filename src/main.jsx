@@ -9,6 +9,7 @@ import {
   Crown,
   Download,
   ImagePlus,
+  Languages,
   Loader2,
   LogOut,
   Mountain,
@@ -34,6 +35,7 @@ const maxReferences = 5;
 const maxReferenceImageEdge = 1600;
 const referenceImageQuality = 0.82;
 const tokenKey = "dreamforge_token";
+const languageKey = "dreamforge_language";
 const announcementDismissPrefix = "dreamforge_announcement_seen_";
 const rechargePlans = [1, 5, 10, 20, 50];
 const historyPageSize = 20;
@@ -69,6 +71,429 @@ const fallbackModels = [
   },
   { id: "nannabanan", label: "🍌 Nannabanan", creditCost: 2, qualityOptions: [] }
 ];
+
+const modelText = {
+  en: {
+    forge: { label: "Forge Image", description: "" },
+    "gpt-image-2": { label: "GPT Image 2", description: "" },
+    nannabanan: { label: "🍌 Nannabanan", description: "" },
+    "1k": "Standard clarity",
+    "2k": "HD poster",
+    "4k": "Ultra-clear large image"
+  }
+};
+
+const categoryText = {
+  en: {
+    custom: "Basic",
+    portrait: "Portrait Editing",
+    product: "Ecommerce Product",
+    art: "Posters & Cards",
+    ppt: "PPT Design",
+    pptopt: "PPT Image Polish",
+    refedit: "Reference Retouch",
+    infographic: "Infographics",
+    assets: "Visual Assets",
+    knowledge: "Education",
+    engineering: "Product Engineering",
+    brandui: "Brand & UI",
+    stickers: "Portraits & Stickers",
+    storyboard: "Storyboards",
+    game: "Game Concepts",
+    longform: "Long-form Charts",
+    merch: "Merchandise",
+    ecommercekit: "Ecommerce Marketing Sets",
+    ecommerceflow: "Ecommerce Workflows",
+    nanocases: "Reference Image Ideas",
+    contentdesign: "Content & Business Design",
+    aesthetic: "Premium Aesthetics",
+    anime: "Anime & Line Art",
+    architecture: "Interior & Home",
+    nature: "Landscape Scenes",
+    future: "Short Video"
+  }
+};
+
+const templateText = {
+  en: {
+    custom: ["Custom", "Freeform from your prompt"],
+    "dream-portrait": ["Dream Portrait", "Stable face, mood, and light"],
+    "hairstyle-change": ["Change Hairstyle", "Keep the face, change hair"],
+    "makeup-change": ["Change Makeup", "Polish makeup and presence"],
+    "background-change": ["Change Background", "Keep subject, change scene"],
+    "sky-change": ["Change Sky", "For landscape or architecture"],
+    "clean-background": ["Clean Background", "Remove clutter"],
+    "high-tension-poster": ["High-impact Poster", "Cover, ad, strong click"],
+    "magazine-cover": ["Text-behind Portrait", "Magazine cover layering"],
+    "product-visual": ["Ecommerce Product", "Prioritize shape and material"],
+    "product-scene-blend": ["Product in Scene", "Place product naturally"],
+    "product-detail-page": ["Product Detail Page", "Selling points and details"],
+    "product-white-background": ["White-background Product", "Main image, cutout, polish"],
+    "clothing-try-on": ["Clothing Try-on", "Person plus outfit"],
+    "ootd-flatlay": ["OOTD Flat Lay", "Extract a full outfit"],
+    "group-photo": ["Group Photo", "Consistent people, natural interaction"],
+    "wedding-photo": ["Wedding Portrait", "Couple photo"],
+    "id-photo": ["ID / Profile Photo", "Professional headshot"],
+    "era-portrait": ["Era Portrait", "Retro time-travel look"],
+    turnaround: ["Character Turnaround", "Design sheet, multiple angles"],
+    "pose-control": ["Pose Control", "Action, sketch, mannequin"],
+    "style-poster-remix": ["Poster Style Remix", "Reference layout and color"],
+    "xiaohongshu-card": ["Rednote Card", "Cards, infographics, guides"],
+    "video-cover": ["Video Cover", "Large title, strong click"],
+    "ppt-cover": ["PPT Cover Slide", "Report, course, proposal"],
+    "business-launch-slide": ["Launch Slide", "Product launch, tech feel"],
+    "tourism-ppt": ["Travel PPT", "City, attraction, culture"],
+    "product-landing-slide": ["Product Landing Hero", "Product image, website hero"],
+    "tech-ppt": ["Dark Tech PPT", "Blue-purple tech, launch"],
+    "guochao-guide": ["Chinese-style Guide", "City travel, split layout"],
+    "ppt-whitespace-cleanup": ["PPT Whitespace Cleanup", "Clean clutter, leave title space"],
+    "ppt-wide-outpaint": ["PPT Wide Outpaint", "Extend vertical image to 16:9"],
+    "ppt-cutout-layout": ["Subject Cutout Layout", "Clean subject for PPT"],
+    "ppt-background-defocus": ["Background Defocus", "Clear subject, softer background"],
+    "ppt-motion-image": ["PPT Motion Image", "Speed, trails, energy"],
+    "ppt-style-unify": ["PPT Style Unifier", "Unify colors across images"],
+    "ppt-add-elements": ["Add PPT Elements", "Foreground, props, scene additions"],
+    "ppt-light-color": ["PPT Light & Color", "Sunset, backlight, cinematic"],
+    "photo-deblur-upscale": ["Deblur & Upscale", "Sharpen and restore naturally"],
+    "focus-control": ["Change Photo Focus", "Sharp subject, blurred background"],
+    "age-transform": ["Age Transform", "Child, youth, elderly"],
+    "skin-texture-edit": ["Skin Texture Edit", "Pores, glow, realistic skin"],
+    "secondary-lighting": ["Relight Image", "Studio, backlight, cinematic light"],
+    "consistent-outfit-change": ["Consistent Outfit Change", "Keep face/body, change clothes"],
+    "multi-subject-consistency": ["Multi-subject Consistency", "People/products in one scene"],
+    "roadmap-flow": ["Roadmap Flow", "Stages, nodes, arrows"],
+    "business-architecture": ["Business Architecture", "Layers, modules, platform"],
+    "data-dashboard": ["Data Dashboard", "Metrics, charts, conclusion"],
+    "comparison-slide": ["Comparison Slide", "Side-by-side pros and cons"],
+    "timeline-slide": ["Timeline Slide", "History or plan"],
+    "icon-set": ["Unified Icon Set", "Same-style icon assets"],
+    "illustration-kit": ["Illustration Kit", "People, scenes, elements"],
+    "ppt-background": ["PPT Background", "Clean background and whitespace"],
+    "title-lettering": ["Title Lettering", "Large title, display type"],
+    "teaching-knowledge-card": ["Teaching Visual", "Classroom, concept, learning"],
+    "six-grid-tutorial": ["Six-grid Tutorial", "Step-by-step lifestyle guide"],
+    "scientific-diagram": ["Scientific Diagram", "Principle, mechanism, structure"],
+    "paper-graphical-abstract": ["Graphical Abstract", "Paper, blog, research summary"],
+    "product-exploded-view": ["Product Exploded View", "Parts and callouts"],
+    "product-manual-page": ["Product Manual Page", "Usage steps and instructions"],
+    "industrial-structure-sheet": ["Industrial Structure Sheet", "Cutaway, engineering feel"],
+    "mobile-ui-showcase": ["Mobile UI Showcase", "App screens, portfolio"],
+    "logo-identity-board": ["Logo Proposal Board", "Logo, grid, variations"],
+    "brand-system-board": ["Brand System Board", "Packaging, posters, mockups"],
+    "livestream-scene": ["Livestream Scene", "Shopping stream UI and products"],
+    "cinematic-portrait": ["Cinematic Portrait", "Portrait, mood, light"],
+    "outdoor-photoshoot": ["Outdoor Photoshoot", "Campus, street, natural light"],
+    "sticker-pack": ["Sticker Pack", "Eight emotions, one character"],
+    "journal-sticker-page": ["Journal Sticker Page", "Stickers, tape, note areas"],
+    "character-bible": ["Character Bible", "People, scenes, worldbuilding"],
+    "storyboard-sheet": ["Film Storyboard", "Shot size, camera, dialogue"],
+    "ad-storyboard": ["Ad Storyboard", "Brand film, selling-point story"],
+    "cinematic-keyframes": ["Cinematic Keyframes", "Consistent scene sequence"],
+    "game-ui-concept": ["Game UI Concept", "Menu, inventory, map"],
+    "gameplay-screenshot": ["Gameplay Screenshot", "First person, story UI"],
+    "game-boss-scene": ["Boss Battle Scene", "Combat, results, map"],
+    "narrative-silhouette-poster": ["Narrative Silhouette Poster", "World inside silhouette"],
+    "event-poster": ["Event Poster", "Avatar, QR, time and place"],
+    "travel-guide-poster": ["Travel Guide Poster", "Route, food, mini map"],
+    "cultural-product-kit": ["Cultural Merch Kit", "Stickers, postcards, goods"],
+    "ecommerce-main-set": ["Ecommerce Main Set", "Main images and selling points"],
+    "ecommerce-long-detail": ["Long Detail Page", "1:3 long page and feature text"],
+    "ecom-studio-main": ["Studio Main Product", "White/gray background, soft light"],
+    "ecom-lifestyle-ad": ["Lifestyle Seeding Ad", "Real scene, social style"],
+    "ecom-macro-detail": ["Macro Product Detail", "Material, opening, close-up"],
+    "ecom-craft-process": ["Handcraft Ad", "Hands, process, craft feel"],
+    "ecom-derived-products": ["Brand Derivatives", "Mugs, bags, candles, merch"],
+    "ecom-product-combo": ["Product Combo Photo", "Platform, flat lay, series"],
+    "ecom-marketing-pack": ["Marketing Material Set", "Main image, scene, poster, merch"],
+    "ecom-bg-replace-workflow": ["Product Background Replace", "Keep product, rebuild scene"],
+    "ecom-white-to-scene-workflow": ["White Product to Scene", "Turn white-background product into scene"],
+    "ecom-jewelry-tryon-workflow": ["Jewelry Try-on", "Natural accessory wearing"],
+    "ecom-model-tryon-workflow": ["Model Outfit Try-on", "Put clothing on a model"],
+    "ecom-object-transfer-workflow": ["Object Transfer", "Place an object into target image"],
+    "ecom-material-replace-workflow": ["Material Replace", "Transfer material to object"],
+    "ecom-pose-replication-workflow": ["Pose Replication", "Use pose reference only"],
+    "precise-image-edit": ["Precise Edit", "Short text, numbers, local edit"],
+    "people-selfie-group": ["People Group Photo", "Group, selfie, hug"],
+    "expression-action-edit": ["Expression / Action Edit", "Smile, sit, hug, stand"],
+    "model-wear-product": ["Model Wearing Product", "Bag, sunglasses, accessory"],
+    "furniture-room-staging": ["Furniture Room Staging", "Place furniture in empty room"],
+    "product-collab-design": ["Product Collaboration", "Main product plus style reference"],
+    "character-figure-toy": ["Character Figure Toy", "1/7 figure, blind box, desk toy"],
+    "sketch-to-finished-art": ["Sketch to Finished Art", "Sketch or line art to final"],
+    "physics-time-effect": ["Physical Time Effect", "Melt, burn, age, break"],
+    "menu-design": ["Menu Design", "Restaurant menu, price list"],
+    "invitation-business-card": ["Invitation / Business Card", "Cards and invitations"],
+    "word-flash-card": ["Word Flash Card", "English word learning cards"],
+    "book-cover-kit": ["Book Cover Kit", "Flat and 3D book cover"],
+    "overseas-ecommerce-poster": ["Overseas Ecommerce Poster", "English selling points, Amazon/site"],
+    "ecommerce-data-selling-point": ["Data Selling-point Image", "Specs, nutrition, comparisons"],
+    "children-science-picturebook": ["Children Science Picturebook", "Kids science story"],
+    "sketch-to-app-ui": ["Sketch to App UI", "Turn sketch into app screen"],
+    "app-mockup-showcase": ["App Mockup Showcase", "Phone mockups, portfolio"],
+    "research-analysis-figure": ["Research Analysis Figure", "Segmentation, classification, medical"],
+    "aesthetic-3d-cartoon-portrait": ["3D Cartoon Portrait", "Animation-grade studio portrait"],
+    "aesthetic-kpop-studio-beauty": ["K-pop Studio Beauty", "Idol look, hair, porcelain skin"],
+    "aesthetic-fine-brush-lady": ["Fine-brush Lady", "Classical Chinese narrative"],
+    "aesthetic-wordless-picturebook": ["Wordless Picturebook", "Story told through images"],
+    "aesthetic-riviera-fashion": ["Riviera Fashion", "Sun, blue-white-red, relaxed premium"],
+    "aesthetic-surreal-sculpture": ["Surreal Sculpture", "Minimal space, installation art"],
+    "aesthetic-eco-glass-surreal": ["Eco Glass Surreal", "Glass, plants, whitespace"],
+    "aesthetic-retro-healing-picturebook": ["Retro Healing Picturebook", "Pencil hatching, warm black-white"],
+    "aesthetic-inflatable-surreal-product": ["Inflatable Surreal Product", "Rubber gloss, art display"],
+    "aesthetic-british-linocut": ["British Linocut", "Low-poly geometry, paper texture"],
+    "aesthetic-graffiti-pop": ["Graffiti Pop", "Bold lines, symbols, rhythm"],
+    "knowledge-encyclopedia": ["Encyclopedia Infographic", "Atlas, modules, information"],
+    "life-timeline": ["Life Timeline", "Stages, places, works"],
+    "event-long-timeline": ["Event Timeline", "Development and release history"],
+    "guofeng-atlas": ["Chinese Atlas Long Image", "Scroll, mythic creatures, categories"],
+    "home-design": ["Home Design", "Furniture and space renovation"],
+    "furniture-placement": ["Furniture Placement", "Place furniture into a room"],
+    "old-photo-restore": ["Old Photo Restore", "Repair and colorize"],
+    "colorize-sketch": ["Sketch Colorization", "Line art and comic coloring"],
+    keyframe: ["Short-video Keyframe", "More stable for video later"]
+  }
+};
+
+const uiText = {
+  zh: {
+    language: "中文",
+    switchLanguage: "English",
+    navAnnouncement: "公告",
+    memberCenter: "会员中心",
+    loginRegister: "登录 / 注册",
+    credits: "积分",
+    creditsPerImage: "积分/张",
+    heroTitle: "让梦境成为现实",
+    heroSubtitle: "上传最多 5 张参考图，再用提示词生成一张更接近你想法的 AI 图片",
+    modelAria: "选择模型",
+    qualityAriaSuffix: "档位",
+    templateLabel: "创作模板",
+    custom: "自定义",
+    promptPlaceholder: "描述你想生成的画面...",
+    generating: "生成中",
+    generateNow: "立即生成",
+    ratioManualPrefix: "提示词写了",
+    ratioManualMiddle: "，当前手动选择",
+    ratioManualSuffix: "，将按手动选择生成。",
+    ratioAutoPrefix: "已根据提示词切换为",
+    switchTo: "改为",
+    referenceButton: "参考图",
+    pasteHint: "可在提示词框直接粘贴图片",
+    removeReference: "移除参考图",
+    referenceIndex: "图",
+    referenceUsagePlaceholder: "可选：这张图参考什么？如人物、服装、背景、姿势、风格",
+    referenceIntel: "生成时会先自动识别每张参考图的用途，再和你的提示词合成新图。",
+    templateGuidance: "提示词明确可直接生成；没思路时再选创作模板探索随机效果。不会写请联系客服。",
+    resultTitle: "生成结果",
+    deducted: "已扣",
+    remaining: "剩余",
+    referenceCountSuffix: "张参考图",
+    download: "下载",
+    footerTitle: "DreamForge 梦境图片创作",
+    footerNote: "用户生成内容默认不公开展示，不提供评论、转发、群组等互动功能。",
+    terms: "用户协议",
+    privacy: "隐私政策",
+    report: "投诉举报",
+    icp: "ICP备案查询",
+    announcement: "公告",
+    announcementCenter: "公告中心",
+    siteAnnouncement: "网站公告",
+    gotIt: "我知道了",
+    close: "关闭",
+    loadingAnnouncements: "正在读取公告...",
+    currentAnnouncement: "当前公告",
+    noAnnouncements: "暂时还没有公告。",
+    member: "会员",
+    loginTitle: "登录账号",
+    registerTitle: "注册账号",
+    redeemTab: "积分兑换",
+    rechargeTab: "充值积分",
+    historyTab: "生成历史",
+    forgeRule: "Forge生图模型：1 积分/张",
+    gptRule: "GPT Image 2：1K 2 积分/张，2K 3 积分/张，4K 5 积分/张",
+    bananaRule: "🍌 Nannabanan：2 积分/张",
+    creditRule: "生成成功后扣除积分，失败不会扣除。",
+    redeemPlaceholder: "输入兑换码",
+    redeemButton: "兑换积分",
+    currentRate: "当前比例",
+    yuan: "元",
+    rechargeCreating: "正在创建订单",
+    wechatRecharge: "微信扫码充值",
+    wechatQrAlt: "微信支付二维码",
+    orderNo: "订单号：",
+    rechargeWait: "付款后请等待后台确认，金额需与订单一致。",
+    paidCheck: "我已付款，查看是否到账",
+    historyLimit: "最多保留最近 100 张",
+    refresh: "刷新",
+    historyLoading: "正在读取历史...",
+    historyEmpty: "还没有生成记录",
+    historyLoadedPrefix: "已读取",
+    historyLoadedSuffix: "张历史图片，图片会直接加载；如果仍未显示，请点刷新重试。",
+    previewImage: "预览图片",
+    historyImageAlt: "历史图片",
+    historyImageError: "图片加载失败",
+    reuse: "复用同款",
+    loadingMore: "正在读取...",
+    loadMoreHistory: "加载更多历史",
+    account: "账号",
+    email: "邮箱",
+    accountPlaceholder: "邮箱 / 原账号",
+    emailPlaceholder: "请输入邮箱地址",
+    password: "密码",
+    passwordPlaceholder: "至少 6 位",
+    login: "登录",
+    register: "注册",
+    toRegister: "没有账号？去注册",
+    toLogin: "已有账号？去登录",
+    historyPreviewAlt: "历史图片预览",
+    downloading: "下载中",
+    downloadOriginal: "下载原图",
+    reportType: "举报类型",
+    reportContact: "联系方式",
+    reportContent: "举报内容",
+    reportContactPlaceholder: "手机号或邮箱，便于反馈处理结果",
+    reportContentPlaceholder: "请说明账号、图片、时间或具体问题",
+    reportSubmitting: "提交中",
+    reportSubmit: "提交举报",
+    compliance: "合规说明"
+  },
+  en: {
+    language: "English",
+    switchLanguage: "中文",
+    navAnnouncement: "Updates",
+    memberCenter: "Account",
+    loginRegister: "Log in / Sign up",
+    credits: "credits",
+    creditsPerImage: "credits/image",
+    heroTitle: "Turn Ideas Into Images",
+    heroSubtitle: "Upload up to 5 references, then describe the image you want to create.",
+    modelAria: "Choose model",
+    qualityAriaSuffix: "quality",
+    templateLabel: "Template",
+    custom: "Custom",
+    promptPlaceholder: "Describe the image you want to create...",
+    generating: "Generating",
+    generateNow: "Generate",
+    ratioManualPrefix: "Your prompt asks for",
+    ratioManualMiddle: ", but the selected ratio is",
+    ratioManualSuffix: ". The selected ratio will be used.",
+    ratioAutoPrefix: "Ratio switched from your prompt:",
+    switchTo: "Use",
+    referenceButton: "References",
+    pasteHint: "Paste images directly into the prompt box",
+    removeReference: "Remove reference",
+    referenceIndex: "Image",
+    referenceUsagePlaceholder: "Optional: what should this image guide? Person, outfit, background, pose, style...",
+    referenceIntel: "Reference images are analyzed first, then combined with your prompt.",
+    templateGuidance: "If your prompt is clear, use Custom. If you need inspiration, choose a template. Contact support if unsure.",
+    resultTitle: "Result",
+    deducted: "used",
+    remaining: "remaining",
+    referenceCountSuffix: "reference image(s)",
+    download: "Download",
+    footerTitle: "DreamForge AI Image Studio",
+    footerNote: "Generated content is private by default. No public posts, comments, reposts, groups, or live features are provided.",
+    terms: "Terms",
+    privacy: "Privacy",
+    report: "Report",
+    icp: "ICP Lookup",
+    announcement: "Update",
+    announcementCenter: "Updates",
+    siteAnnouncement: "Site Update",
+    gotIt: "Got it",
+    close: "Close",
+    loadingAnnouncements: "Loading updates...",
+    currentAnnouncement: "Current",
+    noAnnouncements: "No updates yet.",
+    member: "Member",
+    loginTitle: "Log in",
+    registerTitle: "Create account",
+    redeemTab: "Redeem",
+    rechargeTab: "Recharge",
+    historyTab: "History",
+    forgeRule: "Forge Image: 1 credit/image",
+    gptRule: "GPT Image 2: 1K 2 credits, 2K 3 credits, 4K 5 credits",
+    bananaRule: "🍌 Nannabanan: 2 credits/image",
+    creditRule: "Credits are charged only after successful generation.",
+    redeemPlaceholder: "Enter redeem code",
+    redeemButton: "Redeem",
+    currentRate: "Current rate",
+    yuan: "CNY",
+    rechargeCreating: "Creating order",
+    wechatRecharge: "WeChat QR recharge",
+    wechatQrAlt: "WeChat payment QR code",
+    orderNo: "Order ID: ",
+    rechargeWait: "After payment, please wait for admin confirmation. The amount must match the order.",
+    paidCheck: "I paid, check status",
+    historyLimit: "Latest 100 images are kept",
+    refresh: "Refresh",
+    historyLoading: "Loading history...",
+    historyEmpty: "No generation history yet",
+    historyLoadedPrefix: "Loaded",
+    historyLoadedSuffix: "history images. Images load directly; refresh if they still do not appear.",
+    previewImage: "Preview image",
+    historyImageAlt: "History image",
+    historyImageError: "Image failed to load",
+    reuse: "Reuse prompt",
+    loadingMore: "Loading...",
+    loadMoreHistory: "Load more history",
+    account: "Account",
+    email: "Email",
+    accountPlaceholder: "Email / old account",
+    emailPlaceholder: "Enter email address",
+    password: "Password",
+    passwordPlaceholder: "At least 6 characters",
+    login: "Log in",
+    register: "Sign up",
+    toRegister: "No account? Sign up",
+    toLogin: "Already have an account? Log in",
+    historyPreviewAlt: "History image preview",
+    downloading: "Downloading",
+    downloadOriginal: "Download original",
+    reportType: "Report type",
+    reportContact: "Contact",
+    reportContent: "Details",
+    reportContactPlaceholder: "Phone or email for follow-up",
+    reportContentPlaceholder: "Describe the account, image, time, or issue",
+    reportSubmitting: "Submitting",
+    reportSubmit: "Submit report",
+    compliance: "Compliance"
+  }
+};
+
+const styleLabels = {
+  zh: {
+    custom: "自定义",
+    "dream-cinematic": "梦幻电影感",
+    anime: "动漫插画",
+    realistic: "写实摄影",
+    product: "产品海报"
+  },
+  en: {
+    custom: "Custom",
+    "dream-cinematic": "Dream cinematic",
+    anime: "Anime illustration",
+    realistic: "Realistic photography",
+    product: "Product poster"
+  }
+};
+
+const ratioLabels = {
+  zh: {
+    "16:9": "16:9 横图",
+    "9:16": "9:16 竖图",
+    "1:1": "1:1 方图",
+    "3:4": "3:4 封面",
+    default: "默认比例"
+  },
+  en: {
+    "16:9": "16:9 Landscape",
+    "9:16": "9:16 Portrait",
+    "1:1": "1:1 Square",
+    "3:4": "3:4 Cover",
+    default: "Default ratio"
+  }
+};
 
 const categoryPresets = [
   { id: "custom", label: "自定义", icon: Settings2 },
@@ -1231,7 +1656,14 @@ const templateGroups = templateCategoryOrder
   }))
   .filter((group) => group.templates.length > 0);
 
+function detectInitialLanguage() {
+  const saved = localStorage.getItem(languageKey);
+  if (saved === "en" || saved === "zh") return saved;
+  return navigator.language?.toLowerCase().startsWith("en") ? "en" : "zh";
+}
+
 function App() {
+  const [language, setLanguage] = useState(detectInitialLanguage);
   const [form, setForm] = useState(defaults);
   const [job, setJob] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
@@ -1272,6 +1704,59 @@ function App() {
   const [announcementHistoryLoading, setAnnouncementHistoryLoading] = useState(false);
   const fileInputRef = useRef(null);
   const templateMenuRef = useRef(null);
+  const text = uiText[language] || uiText.zh;
+
+  function t(key) {
+    return text[key] || uiText.zh[key] || key;
+  }
+
+  function templateLabel(template) {
+    if (!template) return t("custom");
+    return templateText[language]?.[template.id]?.[0] || template.label || t("custom");
+  }
+
+  function templateHint(template) {
+    if (!template) return "";
+    return templateText[language]?.[template.id]?.[1] || template.hint || "";
+  }
+
+  function templateGroupLabel(group) {
+    return categoryText[language]?.[group.id] || group.label;
+  }
+
+  function announcementText(item, key) {
+    if (!item) return "";
+    if (language === "en") {
+      if (key === "title") return item.titleEn || t("siteAnnouncement");
+      if (key === "content") return item.contentEn || translateAnnouncementContent(item.content);
+      if (key === "buttonLabel") return item.buttonLabelEn || t("gotIt");
+    }
+    if (key === "title") return item.title || t("siteAnnouncement");
+    if (key === "content") return item.content || "";
+    if (key === "buttonLabel") return item.buttonLabel || t("gotIt");
+    return "";
+  }
+
+  function modelLabel(model) {
+    return localizedModelLabel(model?.id, model?.label, language);
+  }
+
+  function qualityDescription(option) {
+    return modelText[language]?.[option.id] || option.description;
+  }
+
+  function switchLanguage() {
+    const next = language === "en" ? "zh" : "en";
+    localStorage.setItem(languageKey, next);
+    setLanguage(next);
+  }
+
+  useEffect(() => {
+    document.documentElement.lang = language === "en" ? "en" : "zh-CN";
+    document.title = language === "en"
+      ? "DreamForge AI Image Studio"
+      : "DreamForge 梦境 AI 图片生成工具";
+  }, [language]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1334,7 +1819,7 @@ function App() {
         cache: "no-store"
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "请先登录");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "请先登录", language));
       setToken(savedToken);
       setUser(data.user);
       setModels(data.models || fallbackModels);
@@ -1351,7 +1836,7 @@ function App() {
     try {
       const response = await fetch(`${apiBase}/api/announcement`, { cache: "no-store" });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "公告读取失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "公告读取失败", language));
       const item = data.announcement;
       setAnnouncement(item || null);
       if (shouldShowAnnouncement(item)) {
@@ -1364,7 +1849,7 @@ function App() {
   }
 
   function shouldShowAnnouncement(item) {
-    if (!item?.enabled || !item.content) return false;
+    if (!item?.enabled || !announcementText(item, "content")) return false;
     const version = item.version || "1";
     return localStorage.getItem(`${announcementDismissPrefix}${version}`) !== "1";
   }
@@ -1382,7 +1867,7 @@ function App() {
     try {
       const response = await fetch(`${apiBase}/api/announcements`, { cache: "no-store" });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "公告读取失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "公告读取失败", language));
       setAnnouncement(data.announcement || null);
       setAnnouncementHistory(data.history || []);
     } catch {
@@ -1396,7 +1881,7 @@ function App() {
     event?.preventDefault();
     if (!user || !token) {
       setAuthOpen(true);
-      setError("请先登录后再生成图片");
+      setError(localizeMessage("请先登录后再生成图片", language));
       return;
     }
 
@@ -1419,7 +1904,7 @@ function App() {
         })
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "生成失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "生成失败", language));
       setJob(data);
       setUser(data.user);
       setActiveImage(0);
@@ -1442,7 +1927,7 @@ function App() {
         body: JSON.stringify(authForm)
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "操作失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "操作失败", language));
       localStorage.setItem(tokenKey, data.token);
       setToken(data.token);
       setUser(data.user);
@@ -1473,10 +1958,10 @@ function App() {
         body: JSON.stringify({ code: redeemCode })
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "兑换失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "兑换失败", language));
       setUser(data.user);
       setRedeemCode("");
-      setRedeemMessage(data.message || `兑换成功，增加 ${data.creditsAdded} 积分`);
+      setRedeemMessage(language === "en" ? `Redeemed successfully. Added ${data.creditsAdded} credits.` : data.message || `兑换成功，增加 ${data.creditsAdded} 积分`);
     } catch (err) {
       setRedeemMessage(err.message);
     }
@@ -1500,9 +1985,9 @@ function App() {
         body: JSON.stringify({ amountYuan: selectedRechargeAmount })
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "微信充值订单创建失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "微信充值订单创建失败", language));
       setRechargeOrder(data.order);
-      setRechargeMessage("请使用微信扫码支付，付款后等待管理员确认到账。");
+      setRechargeMessage(language === "en" ? "Please scan with WeChat Pay. Credits are added after admin confirmation." : "请使用微信扫码支付，付款后等待管理员确认到账。");
     } catch (err) {
       setRechargeMessage(err.message);
     } finally {
@@ -1518,13 +2003,13 @@ function App() {
         cache: "no-store"
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "充值订单读取失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "充值订单读取失败", language));
       setRechargeOrder(data.order);
       if (data.user) setUser(data.user);
       if (data.order?.status === "paid") {
-        setRechargeMessage(`充值成功，已到账 ${data.order.credits} 积分。`);
+        setRechargeMessage(language === "en" ? `Recharge confirmed. ${data.order.credits} credits added.` : `充值成功，已到账 ${data.order.credits} 积分。`);
       } else if (data.order?.status === "failed") {
-        setRechargeMessage(data.order.error || "充值订单已关闭或失败，请重新下单。");
+        setRechargeMessage(localizeMessage(data.order.error || "充值订单已关闭或失败，请重新下单。", language));
       }
     } catch (err) {
       setRechargeMessage(err.message);
@@ -1560,11 +2045,11 @@ function App() {
         signal: controller.signal
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "历史记录读取失败");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "历史记录读取失败", language));
       setHistory((current) => (append ? [...current, ...(data.history || [])] : data.history || []));
       setHistoryHasMore(Boolean(data.hasMore));
     } catch (err) {
-      setHistoryError(err.name === "AbortError" ? "历史记录读取超时，请稍后刷新。" : err.message);
+      setHistoryError(err.name === "AbortError" ? localizeMessage("历史记录读取超时，请稍后刷新。", language) : localizeMessage(err.message, language));
     } finally {
       window.clearTimeout(timeoutId);
       setHistoryLoading(false);
@@ -1614,7 +2099,9 @@ function App() {
     if (!imageFiles.length) return 0;
     const openSlots = maxReferences - form.references.length;
     if (openSlots <= 0) {
-      if (source === "paste") setPasteMessage(`参考图最多 ${maxReferences} 张，已达到上限`);
+      if (source === "paste") {
+        setPasteMessage(language === "en" ? `You can upload up to ${maxReferences} reference images.` : `参考图最多 ${maxReferences} 张，已达到上限`);
+      }
       return 0;
     }
 
@@ -1625,8 +2112,12 @@ function App() {
       references: [...current.references, ...references].slice(0, maxReferences)
     }));
     if (source === "paste") {
-      const extra = imageFiles.length > selected.length ? `，已忽略 ${imageFiles.length - selected.length} 张超出上限的图片` : "";
-      setPasteMessage(`已添加 ${references.length} 张粘贴图片到参考图${extra}`);
+      const extra = imageFiles.length > selected.length
+        ? language === "en"
+          ? ` Ignored ${imageFiles.length - selected.length} image(s) over the limit.`
+          : `，已忽略 ${imageFiles.length - selected.length} 张超出上限的图片`
+        : "";
+      setPasteMessage(language === "en" ? `Added ${references.length} pasted image(s) to references.${extra}` : `已添加 ${references.length} 张粘贴图片到参考图${extra}`);
       setError("");
     }
     return references.length;
@@ -1656,7 +2147,7 @@ function App() {
     try {
       await addReferenceFiles(files, "paste");
     } catch (err) {
-      setError(err.message || "粘贴参考图失败");
+      setError(localizeMessage(err.message || "粘贴参考图失败", language));
     }
   }
 
@@ -1680,7 +2171,11 @@ function App() {
       promptTemplate: template.id,
       category: template.category || current.category,
       style: template.style || current.style,
-      prompt: template.prompt && (!current.prompt || current.prompt === defaults.prompt) ? template.prompt : current.prompt
+      prompt: language === "en"
+        ? current.prompt
+        : template.prompt && (!current.prompt || current.prompt === defaults.prompt)
+          ? template.prompt
+          : current.prompt
     }));
   }
 
@@ -1759,8 +2254,8 @@ function App() {
         body: JSON.stringify(reportForm)
       });
       const data = await readApiResponse(response);
-      if (!response.ok) throw new Error(data.error || "提交失败");
-      setReportMessage(data.message || "已提交");
+      if (!response.ok) throw new Error(localizeMessage(data.error || "提交失败", language));
+      setReportMessage(language === "en" ? "Submitted." : data.message || "已提交");
       setReportForm({ type: "违法违规内容", contact: "", content: "" });
     } catch (err) {
       setReportMessage(err.message);
@@ -1776,26 +2271,30 @@ function App() {
           <span>Dream</span>Forge
         </a>
         <div className="nav-actions">
+          <button className="language-button" type="button" onClick={switchLanguage} aria-label={t("switchLanguage")}>
+            <Languages size={15} />
+            {t("language")}
+          </button>
           <button className="member-button announcement-button" type="button" onClick={openAnnouncementPanel}>
             <Bell size={16} />
-            公告
+            {t("navAnnouncement")}
           </button>
           <button className="member-button" type="button" onClick={() => openMember("history")}>
             <Crown size={16} />
-            会员中心
+            {t("memberCenter")}
           </button>
           {user ? (
             <div className="user-chip">
               <UserRound size={16} />
               <span>{user.account}</span>
-              <strong>{user.credits} 积分</strong>
-              <button type="button" onClick={logout} title="退出登录">
+              <strong>{user.credits} {t("credits")}</strong>
+              <button type="button" onClick={logout} title={language === "en" ? "Log out" : "退出登录"}>
                 <LogOut size={15} />
               </button>
             </div>
           ) : (
             <button className="login-button" type="button" onClick={() => openMember("redeem")}>
-              登录 / 注册
+              {t("loginRegister")}
             </button>
           )}
         </div>
@@ -1810,11 +2309,11 @@ function App() {
         <div className="shade" />
 
         <div className="hero-content">
-          <h1>让梦境成为现实</h1>
-          <p>上传最多 5 张参考图，再用提示词生成一张更接近你想法的 AI 图片</p>
+          <h1>{t("heroTitle")}</h1>
+          <p>{t("heroSubtitle")}</p>
 
           <form className={templateMenuOpen ? "prompt-console menu-open" : "prompt-console"} onSubmit={submit}>
-            <div className="model-switch" aria-label="选择模型">
+            <div className="model-switch" aria-label={t("modelAria")}>
               {models.map((model) => {
                 const modelCost =
                   model.id === "gpt-image-2"
@@ -1827,15 +2326,15 @@ function App() {
                     key={model.id}
                     onClick={() => chooseModel(model.id)}
                   >
-                    <strong>{model.label}</strong>
-                    <span>{modelCost} 积分/张</span>
+                    <strong>{modelLabel(model)}</strong>
+                    <span>{modelCost} {t("creditsPerImage")}</span>
                   </button>
                 );
               })}
             </div>
 
             {gptQualityOptions.length > 0 && (
-              <div className="quality-switch" aria-label={`${selectedModel.label} 档位`}>
+              <div className="quality-switch" aria-label={`${modelLabel(selectedModel)} ${t("qualityAriaSuffix")}`}>
                 {gptQualityOptions.map((option) => (
                   <button
                     type="button"
@@ -1844,7 +2343,7 @@ function App() {
                     onClick={() => update("gptQuality", option.id)}
                   >
                     <strong>{option.label}</strong>
-                    <span>{option.creditCost} 积分</span>
+                    <span>{option.creditCost} {t("credits")}</span>
                   </button>
                 ))}
               </div>
@@ -1853,7 +2352,7 @@ function App() {
             <div className={templateMenuOpen ? "template-picker open" : "template-picker"} ref={templateMenuRef}>
               <label id="template-select-label">
                 <WandSparkles size={16} />
-                创作模板
+                {t("templateLabel")}
               </label>
               <div className={templateMenuOpen ? "template-select-wrap open" : "template-select-wrap"}>
                 <button
@@ -1865,8 +2364,8 @@ function App() {
                   onClick={() => setTemplateMenuOpen((open) => !open)}
                 >
                   <span>
-                    <strong>{activeTemplate?.label || "自定义"}</strong>
-                    {activeTemplate?.hint ? <small>{activeTemplate.hint}</small> : null}
+                    <strong>{templateLabel(activeTemplate)}</strong>
+                    {templateHint(activeTemplate) ? <small>{templateHint(activeTemplate)}</small> : null}
                   </span>
                   <ChevronDown size={18} />
                 </button>
@@ -1874,7 +2373,7 @@ function App() {
                   <div className="template-menu" role="listbox" aria-labelledby="template-select-label">
                     {templateGroups.map((group) => (
                       <section className="template-menu-group" key={group.id}>
-                        <p>{group.label}</p>
+                        <p>{templateGroupLabel(group)}</p>
                         {group.templates.map((template) => (
                           <button
                             type="button"
@@ -1885,8 +2384,8 @@ function App() {
                             onClick={() => chooseTemplate(template.id)}
                           >
                             <span>
-                              <strong>{template.label}</strong>
-                              {template.hint ? <small>{template.hint}</small> : null}
+                              <strong>{templateLabel(template)}</strong>
+                              {templateHint(template) ? <small>{templateHint(template)}</small> : null}
                             </span>
                             {form.promptTemplate === template.id ? <Check size={15} /> : null}
                           </button>
@@ -1896,7 +2395,7 @@ function App() {
                   </div>
                 )}
               </div>
-              {activeTemplate?.hint ? <p>{activeTemplate.hint}</p> : null}
+              {templateHint(activeTemplate) ? <p>{templateHint(activeTemplate)}</p> : null}
             </div>
 
             <div className="prompt-main">
@@ -1905,12 +2404,12 @@ function App() {
                 value={form.prompt}
                 onChange={(event) => update("prompt", event.target.value)}
                 onPaste={handlePromptPaste}
-                placeholder="描述你想生成的画面..."
+                placeholder={t("promptPlaceholder")}
                 rows={1}
               />
               <button className="generate-button" type="submit" disabled={loading}>
                 {loading ? <Loader2 className="spin" size={20} /> : null}
-                {loading ? "生成中" : `立即生成 · ${currentCost} 积分`}
+                {loading ? t("generating") : `${t("generateNow")} · ${currentCost} ${t("credits")}`}
               </button>
             </div>
             {(ratioAutoMatched || ratioConflict) && (
@@ -1918,12 +2417,12 @@ function App() {
                 <Sparkles size={14} />
                 <span>
                   {ratioConflict
-                    ? `提示词写了 ${ratioLabel(promptRatio)}，当前手动选择 ${ratioLabel(form.ratio)}，将按手动选择生成。`
-                    : `已根据提示词切换为 ${ratioLabel(form.ratio)}。`}
+                    ? `${t("ratioManualPrefix")} ${ratioLabel(promptRatio, language)}${t("ratioManualMiddle")} ${ratioLabel(form.ratio, language)}${t("ratioManualSuffix")}`
+                    : `${t("ratioAutoPrefix")} ${ratioLabel(form.ratio, language)}。`}
                 </span>
                 {ratioConflict && (
                   <button type="button" onClick={usePromptRatio}>
-                    改为{ratioLabel(promptRatio)}
+                    {t("switchTo")} {ratioLabel(promptRatio, language)}
                   </button>
                 )}
               </div>
@@ -1945,13 +2444,13 @@ function App() {
                 disabled={form.references.length >= maxReferences}
               >
                 <ImagePlus size={18} />
-                参考图 {form.references.length}/{maxReferences}
+                {t("referenceButton")} {form.references.length}/{maxReferences}
               </button>
-              <span className="paste-hint">可在提示词框直接粘贴图片</span>
+              <span className="paste-hint">{t("pasteHint")}</span>
               {form.references.map((item) => (
                 <div className="reference-thumb" key={item.id}>
                   <img src={item.preview} alt={item.name} />
-                  <button type="button" onClick={() => removeReference(item.id)} title="移除参考图">
+                  <button type="button" onClick={() => removeReference(item.id)} title={t("removeReference")}>
                     <Trash2 size={13} />
                   </button>
                 </div>
@@ -1962,11 +2461,11 @@ function App() {
               <div className="reference-usage-list">
                 {form.references.map((item, index) => (
                   <label className="reference-usage-item" key={`${item.id}_usage`}>
-                    <span>图{index + 1}</span>
+                    <span>{t("referenceIndex")}{index + 1}</span>
                     <input
                       value={item.usage || ""}
                       onChange={(event) => updateReferenceUsage(item.id, event.target.value)}
-                      placeholder="可选：这张图参考什么？如人物、服装、背景、姿势、风格"
+                      placeholder={t("referenceUsagePlaceholder")}
                       maxLength={120}
                     />
                   </label>
@@ -1976,28 +2475,26 @@ function App() {
             {form.references.length > 0 && (
               <div className="reference-intel">
                 <Sparkles size={15} />
-                <span>生成时会先自动识别每张参考图的用途，再和你的提示词合成新图。</span>
+                <span>{t("referenceIntel")}</span>
               </div>
             )}
 
             <div className="compact-settings">
               <select value={form.style} onChange={(event) => update("style", event.target.value)}>
-                <option value="custom">自定义</option>
-                <option value="dream-cinematic">梦幻电影感</option>
-                <option value="anime">动漫插画</option>
-                <option value="realistic">写实摄影</option>
-                <option value="product">产品海报</option>
+                {Object.entries(styleLabels[language] || styleLabels.zh).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
               </select>
               <select value={form.ratio} onChange={(event) => updateRatio(event.target.value)}>
-                <option value="16:9">16:9 横图</option>
-                <option value="1:1">1:1 方图</option>
-                <option value="9:16">9:16 竖图</option>
-                <option value="3:4">3:4 封面</option>
+                <option value="16:9">{ratioLabel("16:9", language)}</option>
+                <option value="1:1">{ratioLabel("1:1", language)}</option>
+                <option value="9:16">{ratioLabel("9:16", language)}</option>
+                <option value="3:4">{ratioLabel("3:4", language)}</option>
               </select>
               <select value={form.count} onChange={(event) => update("count", Number(event.target.value))}>
-                <option value={1}>1 张</option>
-                <option value={2}>2 张</option>
-                <option value={3}>3 张</option>
+                <option value={1}>1 {language === "en" ? "image" : "张"}</option>
+                <option value={2}>2 {language === "en" ? "images" : "张"}</option>
+                <option value={3}>3 {language === "en" ? "images" : "张"}</option>
               </select>
             </div>
           </form>
@@ -2006,7 +2503,7 @@ function App() {
 
           <div className="template-guidance">
             <Sparkles size={16} />
-            <span>提示词明确可直接生成；没思路时再选创作模板探索随机效果。不会写请联系客服。</span>
+            <span>{t("templateGuidance")}</span>
           </div>
         </div>
       </section>
@@ -2016,19 +2513,19 @@ function App() {
           <div className="result-header">
             <div>
               <p>
-                {job.modelLabel || "Generation"} · 已扣 {job.creditCost} 积分 · 剩余 {job.remainingCredits} 积分
+                {localizedModelLabel(job.input?.model, job.modelLabel || job.input?.model, language)} · {t("deducted")} {job.creditCost} {t("credits")} · {t("remaining")} {job.remainingCredits} {t("credits")}
               </p>
-              <h2>生成结果</h2>
+              <h2>{t("resultTitle")}</h2>
             </div>
-            <div className="result-toolbar" aria-label="生成结果信息">
+            <div className="result-toolbar" aria-label={t("resultTitle")}>
               {activeImageMeta && <span>{activeImageMeta}</span>}
               <span>{job.input?.ratio || "1:1"}</span>
-              {job.input?.gptQuality && <span>{qualityLabel(job.input.gptQuality)}</span>}
-              <span>{job.input?.references?.length || 0} 张参考图</span>
+              {job.input?.gptQuality && <span>{qualityLabel(job.input.gptQuality, language)}</span>}
+              <span>{job.input?.references?.length || 0} {t("referenceCountSuffix")}</span>
               {activeImageData && (
                 <button className="download-button" type="button" onClick={() => downloadImage(activeImageData.url, `${job.id}_${activeImage + 1}.png`, activeImageData.id)} disabled={downloadingImageId === activeImageData.id}>
                   <Download size={18} />
-                  下载
+                  {t("download")}
                 </button>
               )}
             </div>
@@ -2036,7 +2533,7 @@ function App() {
           {job.referencePlan?.source && (
             <div className="generation-intel">
               <Sparkles size={16} />
-              <span>{referencePlanLabel(job.referencePlan)}</span>
+              <span>{referencePlanLabel(job.referencePlan, language)}</span>
             </div>
           )}
 
@@ -2048,7 +2545,7 @@ function App() {
                 key={image.id}
                 onClick={() => setActiveImage(index)}
               >
-                <img src={image.url} alt="生成图片" />
+                <img src={image.url} alt={t("resultTitle")} />
               </button>
             ))}
           </div>
@@ -2058,14 +2555,14 @@ function App() {
 
       <footer className="site-footer">
         <div>
-          <strong>DreamForge 梦境图片创作</strong>
-          <span>用户生成内容默认不公开展示，不提供评论、转发、群组等互动功能。</span>
+          <strong>{t("footerTitle")}</strong>
+          <span>{t("footerNote")}</span>
         </div>
         <nav>
-          <button type="button" onClick={() => setPolicyOpen("terms")}>用户协议</button>
-          <button type="button" onClick={() => setPolicyOpen("privacy")}>隐私政策</button>
-          <button type="button" onClick={() => setPolicyOpen("report")}>投诉举报</button>
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">ICP备案查询</a>
+          <button type="button" onClick={() => setPolicyOpen("terms")}>{t("terms")}</button>
+          <button type="button" onClick={() => setPolicyOpen("privacy")}>{t("privacy")}</button>
+          <button type="button" onClick={() => setPolicyOpen("report")}>{t("report")}</button>
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">{t("icp")}</a>
         </nav>
       </footer>
 
@@ -2074,14 +2571,14 @@ function App() {
           <div className="announcement-modal">
             <div className="announcement-badge">
               <Bell size={15} />
-              <span>公告</span>
+              <span>{t("announcement")}</span>
             </div>
             <div className="announcement-content">
-              <h2 id="site-announcement-title">{announcement.title || "网站公告"}</h2>
-              <p>{announcement.content}</p>
+              <h2 id="site-announcement-title">{announcementText(announcement, "title")}</h2>
+              <p>{announcementText(announcement, "content")}</p>
             </div>
             <button type="button" onClick={dismissAnnouncement}>
-              {announcement.buttonLabel || "我知道了"}
+              {announcementText(announcement, "buttonLabel")}
             </button>
           </div>
         </div>
@@ -2094,31 +2591,31 @@ function App() {
               <div>
                 <div className="announcement-badge">
                   <Bell size={15} />
-                  <span>公告中心</span>
+                  <span>{t("announcementCenter")}</span>
                 </div>
-                <h2 id="site-announcement-panel-title">网站公告</h2>
+                <h2 id="site-announcement-panel-title">{t("siteAnnouncement")}</h2>
               </div>
               <button type="button" className="announcement-close-button" onClick={() => setAnnouncementPanelOpen(false)}>
-                关闭
+                {t("close")}
               </button>
             </div>
 
             {announcementHistoryLoading ? (
-              <p className="announcement-empty">正在读取公告...</p>
+              <p className="announcement-empty">{t("loadingAnnouncements")}</p>
             ) : announcementHistory.length ? (
               <div className="announcement-list">
                 {announcementHistory.map((item, index) => (
                   <article className={index === 0 ? "announcement-list-item current" : "announcement-list-item"} key={`${item.version}_${item.updatedAt}_${index}`}>
                     <div>
-                      <strong>{item.title || "网站公告"}</strong>
-                      <span>{index === 0 ? "当前公告" : formatDate(item.updatedAt)}</span>
+                      <strong>{announcementText(item, "title")}</strong>
+                      <span>{index === 0 ? t("currentAnnouncement") : formatDate(item.updatedAt, language)}</span>
                     </div>
-                    <p>{item.content}</p>
+                    <p>{announcementText(item, "content")}</p>
                   </article>
                 ))}
               </div>
             ) : (
-              <p className="announcement-empty">暂时还没有公告。</p>
+              <p className="announcement-empty">{t("noAnnouncements")}</p>
             )}
           </div>
         </div>
@@ -2129,16 +2626,25 @@ function App() {
           <div className={user ? "auth-modal member-modal" : "auth-modal login-modal"}>
             <div className="auth-head">
               <div>
-                <p>Member</p>
-                <h2>{user ? "会员中心" : authMode === "login" ? "登录账号" : "注册账号"}</h2>
+                <p>{t("member")}</p>
+                <h2>{user ? t("memberCenter") : authMode === "login" ? t("loginTitle") : t("registerTitle")}</h2>
               </div>
               <div className="auth-head-actions">
+                <button
+                  type="button"
+                  className="auth-language-button"
+                  onClick={switchLanguage}
+                  aria-label={t("switchLanguage")}
+                >
+                  <Languages size={14} />
+                  {t("language")}
+                </button>
                 <button type="button" onClick={openAnnouncementPanel}>
-                  公告
+                  {t("navAnnouncement")}
                 </button>
                 {user && (
                   <button type="button" onClick={() => setAuthOpen(false)}>
-                    关闭
+                    {t("close")}
                   </button>
                 )}
               </div>
@@ -2148,7 +2654,7 @@ function App() {
               <>
                 <div className="member-summary">
                   <span>{user.account}</span>
-                  <strong>{user.credits} 积分</strong>
+                  <strong>{user.credits} {t("credits")}</strong>
                 </div>
                 <div className="member-tabs">
                   <button
@@ -2156,14 +2662,14 @@ function App() {
                     className={memberTab === "redeem" ? "active" : ""}
                     onClick={() => setMemberTab("redeem")}
                   >
-                    积分兑换
+                    {t("redeemTab")}
                   </button>
                   <button
                     type="button"
                     className={memberTab === "recharge" ? "active" : ""}
                     onClick={() => setMemberTab("recharge")}
                   >
-                    充值积分
+                    {t("rechargeTab")}
                   </button>
                   <button
                     type="button"
@@ -2173,32 +2679,32 @@ function App() {
                       loadHistory(token);
                     }}
                   >
-                    生成历史
+                    {t("historyTab")}
                   </button>
                 </div>
                 {memberTab === "redeem" ? (
                   <>
                     <div className="member-rules">
-                      <p>Forge生图模型：1 积分/张</p>
-                      <p>GPT Image 2：1K 2 积分/张，2K 3 积分/张，4K 5 积分/张</p>
-                      <p>🍌 Nannabanan：2 积分/张</p>
-                      <p>生成成功后扣除积分，失败不会扣除。</p>
+                      <p>{t("forgeRule")}</p>
+                      <p>{t("gptRule")}</p>
+                      <p>{t("bananaRule")}</p>
+                      <p>{t("creditRule")}</p>
                     </div>
                     <form className="redeem-form" onSubmit={redeemCredits}>
                       <input
                         value={redeemCode}
                         onChange={(event) => setRedeemCode(event.target.value)}
-                        placeholder="输入兑换码"
+                        placeholder={t("redeemPlaceholder")}
                       />
-                      <button type="submit">兑换积分</button>
+                      <button type="submit">{t("redeemButton")}</button>
                     </form>
                     {redeemMessage && <p className="auth-message">{redeemMessage}</p>}
                   </>
                 ) : memberTab === "recharge" ? (
                   <div className="recharge-panel">
                     <div className="recharge-rate">
-                      <span>当前比例</span>
-                      <strong>1 元 = 10 积分</strong>
+                      <span>{t("currentRate")}</span>
+                      <strong>1 {t("yuan")} = 10 {t("credits")}</strong>
                     </div>
                     <div className="recharge-plans">
                       {rechargePlans.map((amount) => (
@@ -2212,24 +2718,24 @@ function App() {
                             setRechargeMessage("");
                           }}
                         >
-                          <span>{amount} 元</span>
-                          <strong>{amount * 10} 积分</strong>
+                          <span>{amount} {t("yuan")}</span>
+                          <strong>{amount * 10} {t("credits")}</strong>
                         </button>
                       ))}
                     </div>
                     <button className="wechat-pay-button" type="button" onClick={createWechatRecharge} disabled={rechargeLoading}>
-                      {rechargeLoading ? "正在创建订单" : "微信扫码充值"}
+                      {rechargeLoading ? t("rechargeCreating") : t("wechatRecharge")}
                     </button>
                     {rechargeOrder?.qrDataUrl && (
                       <div className="wechat-qr-card">
-                        <img src={rechargeOrder.qrDataUrl} alt="微信支付二维码" />
+                        <img src={rechargeOrder.qrDataUrl} alt={t("wechatQrAlt")} />
                         <div>
-                          <strong>{rechargeOrder.amountYuan} 元 / {rechargeOrder.credits} 积分</strong>
-                          <span>订单号：{rechargeOrder.outTradeNo}</span>
-                          <span>付款后请等待后台确认，金额需与订单一致。</span>
-                          <span>{rechargeStatusLabel(rechargeOrder.status)}</span>
+                          <strong>{rechargeOrder.amountYuan} {t("yuan")} / {rechargeOrder.credits} {t("credits")}</strong>
+                          <span>{t("orderNo")}{rechargeOrder.outTradeNo}</span>
+                          <span>{t("rechargeWait")}</span>
+                          <span>{rechargeStatusLabel(rechargeOrder.status, language)}</span>
                           <button type="button" onClick={() => refreshRechargeOrder(rechargeOrder.id)}>
-                            我已付款，查看是否到账
+                            {t("paidCheck")}
                           </button>
                         </div>
                       </div>
@@ -2239,18 +2745,18 @@ function App() {
                 ) : (
                   <div className="history-panel">
                     <div className="history-head">
-                      <span>最多保留最近 100 张</span>
+                      <span>{t("historyLimit")}</span>
                       <button type="button" onClick={() => loadHistory(token)}>
-                        刷新
+                        {t("refresh")}
                       </button>
                     </div>
-                    {historyLoading && <p className="history-empty">正在读取历史...</p>}
+                    {historyLoading && <p className="history-empty">{t("historyLoading")}</p>}
                     {historyError && <p className="auth-error">{historyError}</p>}
                     {!historyLoading && !history.length && !historyError && (
-                      <p className="history-empty">还没有生成记录</p>
+                      <p className="history-empty">{t("historyEmpty")}</p>
                     )}
                     {!historyLoading && history.length > 0 && !historyError && (
-                      <p className="history-note">已读取 {history.length} 张历史图片，图片会直接加载；如果仍未显示，请点刷新重试。</p>
+                      <p className="history-note">{t("historyLoadedPrefix")} {history.length} {t("historyLoadedSuffix")}</p>
                     )}
                     <div className="history-grid">
                       {history.map((item) => (
@@ -2259,21 +2765,21 @@ function App() {
                             className="history-preview-button"
                             type="button"
                             onClick={() => setHistoryPreview(item)}
-                            title="预览图片"
+                            title={t("previewImage")}
                           >
                             <img
                               src={item.thumbnailUrl || item.url}
-                              alt="历史图片"
+                              alt={t("historyImageAlt")}
                               loading="lazy"
                               decoding="async"
                               onLoad={() => markHistoryImage(item.id, "loaded")}
                               onError={() => markHistoryImage(item.id, "error")}
                             />
-                            {historyImageStatus[item.id] === "error" && <span className="history-image-error">图片加载失败</span>}
+                            {historyImageStatus[item.id] === "error" && <span className="history-image-error">{t("historyImageError")}</span>}
                           </button>
                           <div>
-                            <strong>{item.modelLabel || item.model}</strong>
-                            <span>{formatDate(item.createdAt)}</span>
+                            <strong>{localizedModelLabel(item.model, item.modelLabel, language)}</strong>
+                            <span>{formatDate(item.createdAt, language)}</span>
                           </div>
                           <button
                             className="history-download-button"
@@ -2282,10 +2788,10 @@ function App() {
                             disabled={downloadingImageId === item.id}
                           >
                             <Download size={15} />
-                            下载
+                            {t("download")}
                           </button>
                           <button type="button" onClick={() => reuseHistory(item)}>
-                            复用同款
+                            {t("reuse")}
                           </button>
                         </article>
                       ))}
@@ -2297,7 +2803,7 @@ function App() {
                         onClick={() => loadHistory(token, { append: true })}
                         disabled={historyLoading}
                       >
-                        {historyLoading ? "正在读取..." : "加载更多历史"}
+                        {historyLoading ? t("loadingMore") : t("loadMoreHistory")}
                       </button>
                     )}
                   </div>
@@ -2306,27 +2812,27 @@ function App() {
             ) : (
               <form className="login-form" onSubmit={handleAuth}>
                 <label>
-                  <span>{authMode === "login" ? "账号" : "邮箱"}</span>
+                  <span>{authMode === "login" ? t("account") : t("email")}</span>
                   <input
                     value={authForm.account}
                     onChange={(event) => setAuthForm((current) => ({ ...current, account: event.target.value }))}
-                    placeholder={authMode === "login" ? "邮箱 / 原账号" : "请输入邮箱地址"}
+                    placeholder={authMode === "login" ? t("accountPlaceholder") : t("emailPlaceholder")}
                     type={authMode === "login" ? "text" : "email"}
                   />
                 </label>
                 <label>
-                  <span>密码</span>
+                  <span>{t("password")}</span>
                   <input
                     value={authForm.password}
                     type="password"
                     onChange={(event) => setAuthForm((current) => ({ ...current, password: event.target.value }))}
-                    placeholder="至少 6 位"
+                    placeholder={t("passwordPlaceholder")}
                   />
                 </label>
                 {authError && <p className="auth-error">{authError}</p>}
                 {authNotice && <p className="auth-message">{authNotice}</p>}
                 <button className="auth-submit" type="submit">
-                  {authMode === "login" ? "登录" : "注册"}
+                  {authMode === "login" ? t("login") : t("register")}
                 </button>
                 <button
                   className="auth-toggle"
@@ -2337,7 +2843,7 @@ function App() {
                     setAuthNotice("");
                   }}
                 >
-                  {authMode === "login" ? "没有账号？去注册" : "已有账号？去登录"}
+                  {authMode === "login" ? t("toRegister") : t("toLogin")}
                 </button>
               </form>
             )}
@@ -2350,14 +2856,14 @@ function App() {
           <div className="history-preview-modal" onClick={(event) => event.stopPropagation()}>
             <div className="history-preview-head">
               <div>
-                <strong>{historyPreview.modelLabel || historyPreview.model || "历史图片"}</strong>
-                <span>{formatDate(historyPreview.createdAt)}</span>
+                <strong>{localizedModelLabel(historyPreview.model, historyPreview.modelLabel, language)}</strong>
+                <span>{formatDate(historyPreview.createdAt, language)}</span>
               </div>
               <button type="button" onClick={() => setHistoryPreview(null)}>
-                关闭
+                {t("close")}
               </button>
             </div>
-            <img src={historyPreview.url} alt="历史图片预览" />
+            <img src={historyPreview.url} alt={t("historyPreviewAlt")} />
             <div className="history-preview-actions">
               <button
                 type="button"
@@ -2371,10 +2877,10 @@ function App() {
                 disabled={downloadingImageId === historyPreview.id}
               >
                 <Download size={16} />
-                {downloadingImageId === historyPreview.id ? "下载中" : "下载原图"}
+                {downloadingImageId === historyPreview.id ? t("downloading") : t("downloadOriginal")}
               </button>
               <button type="button" onClick={() => reuseHistory(historyPreview)}>
-                复用同款
+                {t("reuse")}
               </button>
             </div>
           </div>
@@ -2386,51 +2892,55 @@ function App() {
           <div className="auth-modal legal-modal">
             <div className="auth-head">
               <div>
-                <p>Compliance</p>
-                <h2>{legalTitle(policyOpen)}</h2>
+                <p>{t("compliance")}</p>
+                <h2>{legalTitle(policyOpen, language)}</h2>
               </div>
-              <button type="button" onClick={() => setPolicyOpen(null)}>关闭</button>
+              <button type="button" onClick={() => setPolicyOpen(null)}>{t("close")}</button>
             </div>
             {policyOpen === "report" ? (
               <form className="report-form" onSubmit={submitReport}>
                 <label>
-                  <span>举报类型</span>
+                  <span>{t("reportType")}</span>
                   <select
                     value={reportForm.type}
                     onChange={(event) => setReportForm((current) => ({ ...current, type: event.target.value }))}
                   >
-                    <option>违法违规内容</option>
-                    <option>侵权内容</option>
-                    <option>个人信息问题</option>
-                    <option>账号异常</option>
-                    <option>系统漏洞</option>
-                    <option>其他问题</option>
+                    {[
+                      ["违法违规内容", language === "en" ? "Illegal or harmful content" : "违法违规内容"],
+                      ["侵权内容", language === "en" ? "Copyright or trademark issue" : "侵权内容"],
+                      ["个人信息问题", language === "en" ? "Personal information issue" : "个人信息问题"],
+                      ["账号异常", language === "en" ? "Account issue" : "账号异常"],
+                      ["系统漏洞", language === "en" ? "Security vulnerability" : "系统漏洞"],
+                      ["其他问题", language === "en" ? "Other issue" : "其他问题"]
+                    ].map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
                   </select>
                 </label>
                 <label>
-                  <span>联系方式</span>
+                  <span>{t("reportContact")}</span>
                   <input
                     value={reportForm.contact}
                     onChange={(event) => setReportForm((current) => ({ ...current, contact: event.target.value }))}
-                    placeholder="手机号或邮箱，便于反馈处理结果"
+                    placeholder={t("reportContactPlaceholder")}
                   />
                 </label>
                 <label>
-                  <span>举报内容</span>
+                  <span>{t("reportContent")}</span>
                   <textarea
                     value={reportForm.content}
                     onChange={(event) => setReportForm((current) => ({ ...current, content: event.target.value }))}
-                    placeholder="请说明账号、图片、时间或具体问题"
+                    placeholder={t("reportContentPlaceholder")}
                     rows={5}
                   />
                 </label>
                 <button className="auth-submit" type="submit" disabled={reportLoading}>
-                  {reportLoading ? "提交中" : "提交举报"}
+                  {reportLoading ? t("reportSubmitting") : t("reportSubmit")}
                 </button>
                 {reportMessage && <p className="auth-message">{reportMessage}</p>}
               </form>
             ) : (
-              <LegalContent type={policyOpen} />
+              <LegalContent type={policyOpen} language={language} />
             )}
           </div>
         </div>
@@ -2439,22 +2949,89 @@ function App() {
   );
 }
 
-function legalTitle(type) {
-  const map = {
-    terms: "用户协议",
-    privacy: "隐私政策",
-    report: "投诉举报"
+function legalTitle(type, language = "zh") {
+  const maps = {
+    zh: {
+      terms: "用户协议",
+      privacy: "隐私政策",
+      report: "投诉举报"
+    },
+    en: {
+      terms: "Terms of Use",
+      privacy: "Privacy Policy",
+      report: "Report an Issue"
+    }
   };
-  return map[type] || "";
+  return (maps[language] || maps.zh)[type] || "";
 }
 
-function LegalContent({ type }) {
+function localizedModelLabel(modelId, fallback = "", language = "zh") {
+  const id = String(modelId || "").toLowerCase();
+  const names = language === "en"
+    ? {
+        forge: "Forge Image",
+        "gpt-image-2": "GPT Image 2",
+        nannabanan: "🍌 Nannabanan"
+      }
+    : {
+        forge: "Forge生图模型",
+        "gpt-image-2": "GPT Image 2",
+        nannabanan: "🍌 Nannabanan"
+      };
+
+  if (names[id]) return names[id];
+  if (id.startsWith("gpt-image-2")) return names["gpt-image-2"];
+  if (id.includes("nannabanan") || id.includes("banana")) return names.nannabanan;
+  if (id.includes("forge")) return names.forge;
+  return fallback || (language === "en" ? "Generation" : "未知模型");
+}
+
+function translateAnnouncementContent(content = "") {
+  const text = String(content || "");
+  if (!text) return "";
+  if (/充值福利/.test(text)) {
+    return "For site questions, contact support: QQ 258480973.\nRecharge promotion: 5 CNY = 60 credits, 10 CNY = 120 credits, 20 CNY = 250 credits.";
+  }
+  if (/下午官方限流/.test(text)) {
+    return "Support: QQ 258480973.\nThe upstream service may be rate-limited this afternoon. If generation fails, please try again.";
+  }
+  if (/香蕉暂不可用/.test(text)) {
+    return "Support: QQ 258480973.\nNannabanan is temporarily unavailable.";
+  }
+  if (/拼多多已恢复/.test(text)) {
+    return "Pinduoduo recharge is available again. For recharge support, contact QQ 258480973.";
+  }
+  if (/客服|售后/.test(text)) {
+    return "For support, contact QQ 258480973.";
+  }
+  return "This announcement is currently available in Chinese. Please contact support for help.";
+}
+
+function LegalContent({ type, language = "zh" }) {
   if (type === "privacy") {
+    if (language === "en") {
+      return (
+        <div className="legal-content">
+          <p>We collect only necessary account, login, generation, credit, operation log, and report information for account management, content safety, dispute handling, and lawful compliance.</p>
+          <p>The site uses HTTPS for transmission. Passwords are stored as hashes. Admin access is limited to administrators. Uploaded reference images and prompts are used for generation, history, and safety review.</p>
+          <p>You may contact us through the report entry to request access, correction, or deletion of personal information. Records required by law may be retained for the required period.</p>
+        </div>
+      );
+    }
     return (
       <div className="legal-content">
         <p>我们遵循最小必要原则收集账号、登录状态、生成记录、积分记录、操作日志和投诉举报信息，用于账号管理、内容安全、纠纷处理和依法配合监管。</p>
         <p>网站使用 HTTPS 传输数据，密码以哈希方式保存，后台访问仅限管理员。用户上传参考图和提示词仅用于本次生成、历史记录和安全审计。</p>
         <p>用户可通过投诉举报入口联系我们，申请查询、更正或删除个人信息。依法需要留存的安全日志、生成记录和处置记录将在规定期限内保存。</p>
+      </div>
+    );
+  }
+  if (language === "en") {
+    return (
+      <div className="legal-content">
+        <p>Users must comply with applicable laws and may not use this site to generate or distribute illegal, pornographic, violent, fraudulent, infringing, minor-harming, or otherwise harmful content.</p>
+        <p>This site is an image creation tool. It does not provide public posting, comments, reposts, groups, or live-streaming features. Generated results are private to the account by default.</p>
+        <p>If misuse is found, the site may refuse generation, restrict account features, remove related records, and cooperate with regulators or law enforcement as required.</p>
       </div>
     );
   }
@@ -2467,10 +3044,20 @@ function LegalContent({ type }) {
   );
 }
 
-function referencePlanLabel(plan) {
+function referencePlanLabel(plan, language = "zh") {
+  if (language === "en") {
+    if (!plan?.source) return "No reference analysis";
+    if (plan.source === "prompt-only") {
+      const reason = shortVisionError(plan.error, language);
+      return reason ? `Reference analysis: prompt-only fallback · ${reason}` : "Reference analysis: prompt-only fallback";
+    }
+    const source = plan.source.includes("agnes") ? "Agnes fallback vision" : plan.source.includes("gpt-5.5") ? "GPT5.5 vision" : plan.source;
+    const usedFallback = Array.isArray(plan.attempts) && plan.attempts.some((item) => item.ok === false);
+    return `Reference analysis complete · ${source}${usedFallback ? " · switched after primary failed" : ""}`;
+  }
   if (!plan?.source) return "无参考图分析";
   if (plan.source === "prompt-only") {
-    const reason = shortVisionError(plan.error);
+    const reason = shortVisionError(plan.error, language);
     return reason ? `参考图理解：备用提示词模式 · ${reason}` : "参考图理解：备用提示词模式";
   }
   const source = plan.source.includes("agnes") ? "Agnes备用视觉" : plan.source.includes("gpt-5.5") ? "GPT5.5视觉" : plan.source;
@@ -2478,9 +3065,18 @@ function referencePlanLabel(plan) {
   return `参考图理解：已完成 · ${source}${usedFallback ? " · 主模型失败后切换" : ""}`;
 }
 
-function shortVisionError(error) {
+function shortVisionError(error, language = "zh") {
   const text = String(error || "");
   if (!text) return "";
+  if (language === "en") {
+    if (/timeout/i.test(text)) return "vision model timed out";
+    if (/api key|unauthorized|401|invalid key/i.test(text)) return "vision API configuration issue";
+    if (/429|rate limit|too many/i.test(text)) return "vision model rate limited";
+    if (/quota|balance|insufficient/i.test(text)) return "vision model quota is insufficient";
+    if (/503|502|500|upstream/i.test(text)) return "vision upstream error";
+    if (/No usable reference/i.test(text)) return "reference image was not received";
+    return localizeMessage(text.slice(0, 80), language);
+  }
   if (/timeout/i.test(text)) return "视觉模型超时";
   if (/api key|unauthorized|401|invalid key/i.test(text)) return "视觉API配置异常";
   if (/429|rate limit|too many/i.test(text)) return "视觉模型限流";
@@ -2559,33 +3155,35 @@ function getEffectiveRatio(form) {
   return inferRatioFromPrompt(form?.prompt) || form?.ratio || defaults.ratio;
 }
 
-function ratioLabel(value) {
-  const labels = {
-    "16:9": "16:9 横图",
-    "9:16": "9:16 竖图",
-    "1:1": "1:1 方图",
-    "3:4": "3:4 封面"
-  };
-  return labels[value] || value || "默认比例";
+function ratioLabel(value, language = "zh") {
+  const labels = ratioLabels[language] || ratioLabels.zh;
+  return labels[value] || value || labels.default;
 }
 
-function qualityLabel(value) {
-  const labels = {
-    standard: "标准",
-    high: "高质"
-  };
+function qualityLabel(value, language = "zh") {
+  const labels = language === "en"
+    ? { standard: "Standard", high: "High quality" }
+    : { standard: "标准", high: "高质" };
   return labels[value] || String(value || "").toUpperCase();
 }
 
-function rechargeStatusLabel(status) {
-  const labels = {
-    created: "订单已创建",
-    pending: "等待后台确认到账",
-    paid: "充值成功，积分已到账",
-    failed: "订单已关闭或失败",
-    amount_mismatch: "支付金额异常，请联系客服"
-  };
-  return labels[status] || status || "等待支付";
+function rechargeStatusLabel(status, language = "zh") {
+  const labels = language === "en"
+    ? {
+        created: "Order created",
+        pending: "Waiting for admin confirmation",
+        paid: "Recharge confirmed, credits added",
+        failed: "Order closed or failed",
+        amount_mismatch: "Payment amount mismatch. Contact support."
+      }
+    : {
+        created: "订单已创建",
+        pending: "等待后台确认到账",
+        paid: "充值成功，积分已到账",
+        failed: "订单已关闭或失败",
+        amount_mismatch: "支付金额异常，请联系客服"
+      };
+  return labels[status] || status || (language === "en" ? "Waiting for payment" : "等待支付");
 }
 
 async function readApiResponse(response) {
@@ -2607,14 +3205,46 @@ async function readApiResponse(response) {
   }
 }
 
-function formatDate(value) {
+function formatDate(value, language = "zh") {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("zh-CN", {
+  return date.toLocaleString(language === "en" ? "en-US" : "zh-CN", {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit"
   });
+}
+
+function localizeMessage(message, language = "zh") {
+  const text = String(message || "");
+  if (language !== "en" || !text) return text;
+
+  const patterns = [
+    [/请先登录后再生成图片|请先登录/, "Please log in before generating images."],
+    [/请先描述你想生成的画面/, "Please describe the image you want to generate."],
+    [/生成失败/, "Generation failed."],
+    [/操作失败/, "Operation failed."],
+    [/兑换失败/, "Redeem failed."],
+    [/微信充值订单创建失败/, "Failed to create WeChat recharge order."],
+    [/充值订单读取失败/, "Failed to load recharge order."],
+    [/充值订单已关闭或失败/, "The recharge order is closed or failed. Please create a new order."],
+    [/历史记录读取失败/, "Failed to load generation history."],
+    [/历史记录读取超时/, "Loading history timed out. Please refresh later."],
+    [/公告读取失败/, "Failed to load updates."],
+    [/提交失败/, "Submission failed."],
+    [/粘贴参考图失败/, "Failed to paste reference image."],
+    [/服务器网关等待超时|生成时间较长/, "Generation is taking longer than usual. The image may still appear in history later."],
+    [/服务器暂时异常/, "The server is temporarily unavailable. Please try again later."],
+    [/服务器返回格式异常/, "The server returned an unexpected response. Please refresh and try again."],
+    [/图片加载失败/, "Image failed to load."],
+    [/参考图读取失败/, "Failed to read reference image."],
+    [/参考图压缩失败/, "Failed to compress reference image."]
+  ];
+  for (const [pattern, replacement] of patterns) {
+    if (pattern.test(text)) return replacement;
+  }
+  if (/积分/.test(text)) return text.replace(/积分/g, "credits");
+  return text;
 }

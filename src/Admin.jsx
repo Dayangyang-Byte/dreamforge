@@ -28,6 +28,9 @@ export function AdminApp() {
     title: "网站公告",
     content: "",
     buttonLabel: "我知道了",
+    titleEn: "Site Update",
+    contentEn: "",
+    buttonLabelEn: "Got it",
     version: "1"
   });
   const [announcementSaving, setAnnouncementSaving] = useState(false);
@@ -1273,6 +1276,7 @@ function channelStatusLabel(status) {
 
 function AnnouncementPanel({ announcement, saving, onChange, onSave }) {
   const content = announcement.content || "";
+  const contentEn = announcement.contentEn || "";
   return (
     <div className="announcement-studio">
       <div className="admin-section-head">
@@ -1314,6 +1318,25 @@ function AnnouncementPanel({ announcement, saving, onChange, onSave }) {
             />
             <small>{content.length} / 3000</small>
           </label>
+          <label>
+            <span>English title</span>
+            <input
+              value={announcement.titleEn || ""}
+              maxLength={80}
+              onChange={(event) => onChange({ titleEn: event.target.value })}
+              placeholder="Optional English title"
+            />
+          </label>
+          <label>
+            <span>English content</span>
+            <textarea
+              value={contentEn}
+              maxLength={3000}
+              onChange={(event) => onChange({ contentEn: event.target.value })}
+              placeholder="Optional English announcement content"
+            />
+            <small>{contentEn.length} / 3000</small>
+          </label>
           <div className="announcement-inline-fields">
             <label>
               <span>按钮文案</span>
@@ -1322,6 +1345,15 @@ function AnnouncementPanel({ announcement, saving, onChange, onSave }) {
                 maxLength={20}
                 onChange={(event) => onChange({ buttonLabel: event.target.value })}
                 placeholder="我知道了"
+              />
+            </label>
+            <label>
+              <span>English button</span>
+              <input
+                value={announcement.buttonLabelEn || ""}
+                maxLength={20}
+                onChange={(event) => onChange({ buttonLabelEn: event.target.value })}
+                placeholder="Got it"
               />
             </label>
             <label>
@@ -1344,6 +1376,13 @@ function AnnouncementPanel({ announcement, saving, onChange, onSave }) {
           <strong>{announcement.title || "网站公告"}</strong>
           <p>{content || "公告内容会显示在这里。"}</p>
           <button type="button">{announcement.buttonLabel || "我知道了"}</button>
+          {contentEn ? (
+            <div className="announcement-preview-secondary">
+              <strong>{announcement.titleEn || "Site Update"}</strong>
+              <p>{contentEn}</p>
+              <button type="button">{announcement.buttonLabelEn || "Got it"}</button>
+            </div>
+          ) : null}
         </div>
       </section>
     </div>

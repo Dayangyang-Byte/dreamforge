@@ -922,10 +922,13 @@ function publicAnnouncement(announcement, { publicOnly = false } = {}) {
     title: clean(item.title || "网站公告").slice(0, 80) || "网站公告",
     content: String(item.content || "").trim().slice(0, 3000),
     buttonLabel: clean(item.buttonLabel || "我知道了").slice(0, 20) || "我知道了",
+    titleEn: clean(item.titleEn || "").slice(0, 80),
+    contentEn: String(item.contentEn || "").trim().slice(0, 3000),
+    buttonLabelEn: clean(item.buttonLabelEn || "").slice(0, 20),
     version: clean(item.version || "1").slice(0, 40) || "1",
     updatedAt: item.updatedAt || ""
   };
-  if (publicOnly && (!payload.enabled || !payload.content)) {
+  if (publicOnly && (!payload.enabled || (!payload.content && !payload.contentEn))) {
     return { ...payload, enabled: false, content: "" };
   }
   return payload;

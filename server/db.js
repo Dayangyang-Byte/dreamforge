@@ -173,6 +173,9 @@ export function initDatabase(dbPath) {
       title TEXT,
       content TEXT,
       button_label TEXT,
+      title_en TEXT,
+      content_en TEXT,
+      button_label_en TEXT,
       version TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -207,6 +210,7 @@ export function initDatabase(dbPath) {
   `);
   ensureImageAssetColumns();
   ensureGenerationRequestColumns();
+  ensureAnnouncementColumns();
   return db;
 }
 
@@ -242,6 +246,22 @@ function ensureGenerationRequestColumns() {
   for (const [name, type] of additions) {
     if (!columns.has(name)) {
       database.exec(`ALTER TABLE generation_requests ADD COLUMN ${name} ${type}`);
+    }
+  }
+}
+
+function ensureAnnouncementColumns() {
+  const database = getDatabase();
+  const columns = new Set(database.prepare("PRAGMA table_info(announcements)").all().map((row) => row.name));
+  const additions = [
+    ["title_en", "TEXT"],
+    ["content_en", "TEXT"],
+    ["button_label_en", "TEXT"]
+  ];
+
+  for (const [name, type] of additions) {
+    if (!columns.has(name)) {
+      database.exec(`ALTER TABLE announcements ADD COLUMN ${name} ${type}`);
     }
   }
 }
@@ -898,13 +918,13 @@ export function getAnnouncementHistory({ limit = 50 } = {}) {
   const database = getDatabase();
   const current = getAnnouncement();
   const rows = database
-    .prepare("SELECT * FROM announcements WHERE id != ? AND content != '' ORDER BY updated_at DESC LIMIT ?")
+    .prepare("SELECT * FROM announcements WHERE id != ? AND (content != '' OR content_en != '') ORDER BY updated_at DESC LIMIT ?")
     .all("main", Number(limit || 50))
     .map(dbAnnouncementToRuntime);
-  const items = current.content ? [current, ...rows] : rows;
+  const items = current.content || current.contentEn ? [current, ...rows] : rows;
   const seen = new Set();
   return items.filter((item) => {
-    const key = `${item.version}|${item.title}|${item.content}`;
+    const key = `${item.version}|${item.title}|${item.content}|${item.titleEn}|${item.contentEn}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -920,13 +940,16 @@ export function upsertAnnouncement(raw = {}) {
   try {
     database
       .prepare(
-        `INSERT INTO announcements (id, enabled, title, content, button_label, version, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO announcements (id, enabled, title, content, button_label, title_en, content_en, button_label_en, version, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET
            enabled = excluded.enabled,
            title = excluded.title,
            content = excluded.content,
            button_label = excluded.button_label,
+           title_en = excluded.title_en,
+           content_en = excluded.content_en,
+           button_label_en = excluded.button_label_en,
            version = excluded.version,
            updated_at = excluded.updated_at`
       )
@@ -936,16 +959,19 @@ export function upsertAnnouncement(raw = {}) {
         next.title,
         next.content,
         next.buttonLabel,
+        next.titleEn,
+        next.contentEn,
+        next.buttonLabelEn,
         next.version,
         current.createdAt || now,
         now
       );
 
-    if (next.content) {
+    if (next.content || next.contentEn) {
       database
         .prepare(
-          `INSERT INTO announcements (id, enabled, title, content, button_label, version, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO announcements (id, enabled, title, content, button_label, title_en, content_en, button_label_en, version, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .run(
           `history_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
@@ -953,6 +979,9 @@ export function upsertAnnouncement(raw = {}) {
           next.title,
           next.content,
           next.buttonLabel,
+          next.titleEn,
+          next.contentEn,
+          next.buttonLabelEn,
           next.version,
           now,
           now
@@ -1608,6 +1637,9 @@ function defaultAnnouncement() {
     title: "网站公告",
     content: "",
     buttonLabel: "我知道了",
+    titleEn: "Site Update",
+    contentEn: "",
+    buttonLabelEn: "Got it",
     version: "1",
     createdAt: "",
     updatedAt: ""
@@ -1620,6 +1652,9 @@ function dbAnnouncementToRuntime(row) {
     title: row.title || "网站公告",
     content: row.content || "",
     buttonLabel: row.button_label || "我知道了",
+    titleEn: row.title_en || "",
+    contentEn: row.content_en || "",
+    buttonLabelEn: row.button_label_en || "",
     version: row.version || "1",
     createdAt: row.created_at || "",
     updatedAt: row.updated_at || ""
@@ -1656,6 +1691,9 @@ function normalizeAnnouncementInput(raw = {}, current = defaultAnnouncement()) {
   const title = String(raw.title ?? current.title ?? "网站公告").trim().slice(0, 80) || "网站公告";
   const content = String(raw.content ?? current.content ?? "").trim().slice(0, 3000);
   const buttonLabel = String(raw.buttonLabel ?? raw.button_label ?? current.buttonLabel ?? "我知道了").trim().slice(0, 20) || "我知道了";
+  const titleEn = String(raw.titleEn ?? raw.title_en ?? current.titleEn ?? "").trim().slice(0, 80);
+  const contentEn = String(raw.contentEn ?? raw.content_en ?? current.contentEn ?? "").trim().slice(0, 3000);
+  const buttonLabelEn = String(raw.buttonLabelEn ?? raw.button_label_en ?? current.buttonLabelEn ?? "").trim().slice(0, 20);
   const incomingVersion = String(raw.version ?? "").trim().slice(0, 40);
   const version = incomingVersion || String(Date.now());
   return {
@@ -1663,6 +1701,9 @@ function normalizeAnnouncementInput(raw = {}, current = defaultAnnouncement()) {
     title,
     content,
     buttonLabel,
+    titleEn,
+    contentEn,
+    buttonLabelEn,
     version
   };
 }
