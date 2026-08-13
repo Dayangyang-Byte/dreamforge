@@ -4,11 +4,10 @@
   "framework": "vite",
   "installCommand": "npm install",
   "routes": [
-    { "src": "/assets/(.*)", "dest": "/assets/$1" },
-    { "src": "/bg/(.*)", "dest": "/bg/$1" },
-    { "src": "/pay/(.*)", "dest": "/pay/$1" },
-    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
+    { "src": "/google54e02f34814caa86.html", "dest": "/google54e02f34814caa86.html" },
     { "src": "/robots.txt", "dest": "/robots.txt" },
+    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "/en/faq", "dest": "/en/faq.html" },
     { "src": "/en/prompts", "dest": "/en/prompts.html" },
     { "src": "/(.*)", "dest": "/index.html" }
