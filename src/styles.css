@@ -2467,6 +2467,7 @@ body {
 .hero {
   min-height: 100vh;
   padding-top: 104px;
+  overflow: hidden;
 }
 
 .mosaic {
@@ -3319,7 +3320,7 @@ body {
 
 .mosaic {
   opacity: 0.92;
-  bottom: 210px;
+  bottom: 340px;
 }
 
 .art-card {
@@ -3344,9 +3345,12 @@ body {
 
 .site-footer {
   position: relative;
-  z-index: 8;
+  z-index: 30;
+  max-width: none;
+  width: 100%;
+  padding-inline: max(18px, calc((100vw - 1180px) / 2 + 18px));
   background:
-    linear-gradient(180deg, rgba(5, 8, 23, 0.96), rgba(5, 8, 23, 0.98));
+    linear-gradient(180deg, rgba(5, 8, 23, 1), rgba(5, 8, 23, 1));
 }
 
 .prompt-console,
@@ -3522,7 +3526,7 @@ body {
 @media (max-width: 720px) {
   .mosaic {
     opacity: 0.78;
-    bottom: 260px;
+    bottom: 360px;
   }
 
   .prompt-console::before,
