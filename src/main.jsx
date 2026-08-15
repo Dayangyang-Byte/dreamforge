@@ -58,7 +58,7 @@ const defaults = {
 };
 
 const fallbackModels = [
-  { id: "forge", label: "Forge生图模型", creditCost: 1, qualityOptions: [] },
+  { id: "forge", label: "Forge生图模型", creditCost: 0, qualityOptions: [] },
   {
     id: "gpt-image-2",
     label: "GPT Image 2",
@@ -263,6 +263,8 @@ const uiText = {
     loginRegister: "登录 / 注册",
     credits: "积分",
     creditsPerImage: "积分/张",
+    free: "免费",
+    freePerImage: "免费/张",
     heroTitle: "让梦境成为现实",
     heroSubtitle: "上传最多 5 张参考图，再用提示词生成一张更接近你想法的 AI 图片",
     modelAria: "选择模型",
@@ -309,7 +311,7 @@ const uiText = {
     redeemTab: "积分兑换",
     rechargeTab: "充值积分",
     historyTab: "生成历史",
-    forgeRule: "Forge生图模型：1 积分/张",
+    forgeRule: "Forge生图模型：免费/张",
     gptRule: "GPT Image 2：1K 2 积分/张，2K 3 积分/张，4K 5 积分/张",
     bananaRule: "🍌 Nannabanan：2 积分/张",
     creditRule: "生成成功后扣除积分，失败不会扣除。",
@@ -365,6 +367,8 @@ const uiText = {
     loginRegister: "Log in / Sign up",
     credits: "credits",
     creditsPerImage: "credits/image",
+    free: "Free",
+    freePerImage: "Free",
     heroTitle: "Turn Ideas Into Images",
     heroSubtitle: "Upload up to 5 references, then describe the image you want to create.",
     modelAria: "Choose model",
@@ -411,7 +415,7 @@ const uiText = {
     redeemTab: "Redeem",
     rechargeTab: "Recharge",
     historyTab: "History",
-    forgeRule: "Forge Image: 1 credit/image",
+    forgeRule: "Forge Image: free",
     gptRule: "GPT Image 2: 1K 2 credits, 2K 3 credits, 4K 5 credits",
     bananaRule: "🍌 Nannabanan: 2 credits/image",
     creditRule: "Credits are charged only after successful generation.",
@@ -1790,7 +1794,7 @@ function App() {
 
   const gptQualityOptions = selectedModel.qualityOptions || [];
   const currentCost = useMemo(() => {
-    const perImageCost = gptQualityOptions.find((item) => item.id === form.gptQuality)?.creditCost || selectedModel.creditCost || 1;
+    const perImageCost = gptQualityOptions.find((item) => item.id === form.gptQuality)?.creditCost ?? selectedModel.creditCost ?? 1;
     return perImageCost * Number(form.count || 1);
   }, [selectedModel, gptQualityOptions, form.gptQuality, form.count]);
 
@@ -2327,7 +2331,7 @@ function App() {
                     onClick={() => chooseModel(model.id)}
                   >
                     <strong>{modelLabel(model)}</strong>
-                    <span>{modelCost} {t("creditsPerImage")}</span>
+                    <span>{Number(modelCost) === 0 ? t("freePerImage") : `${modelCost} ${t("creditsPerImage")}`}</span>
                   </button>
                 );
               })}
@@ -2409,7 +2413,7 @@ function App() {
               />
               <button className="generate-button" type="submit" disabled={loading}>
                 {loading ? <Loader2 className="spin" size={20} /> : null}
-                {loading ? t("generating") : `${t("generateNow")} · ${currentCost} ${t("credits")}`}
+                {loading ? t("generating") : `${t("generateNow")} · ${currentCost === 0 ? t("free") : `${currentCost} ${t("credits")}`}`}
               </button>
             </div>
             {(ratioAutoMatched || ratioConflict) && (
