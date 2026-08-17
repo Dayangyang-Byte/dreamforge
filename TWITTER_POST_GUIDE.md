@@ -1,106 +1,133 @@
-# DreamForge Twitter/X 推文指南
+# DreamForge Twitter 推文文案
 
-## 📝 推文文案（推荐）
-
-### 推文 1：产品发布
+## 推文1：产品介绍（推荐）
 
 ```
-分享一个我正在做的AI图片生成器 🎨
+🎨 发现了一个超好用的 AI 画图工具——DreamForge（梦境AI）
 
-DreamForge（梦境AI）—— 专注梦幻/电影感风格
+✨ 亮点：
+• 中文原生支持，提示词零门槛
+• 3种风格：梦幻电影感/动漫插画/写实摄影
+• 上传参考图，一键风格转换
+• 注册送免费积分
 
-✨ 核心能力：
-• 精准还原提示词意图
-• 梦幻/电影/动漫/写实多风格
-• 支持参考图上传（最多5张）
-• 新用户免费试用
+🔗 https://dreamforge-679j.vercel.app
 
-💰 定价：1-5积分/张
-
-🔗 体验：dreamforge-679j.vercel.app
-💻 GitHub：github.com/Dayangyang-Byte/dreamforge
-
-#AI绘画 #Midjourney #StableDiffusion #开源
+#AI绘画 #AIGC #梦境AI #DreamForge #Midjourney平替
 ```
 
 ---
 
-### 推文 2：技术分享
+## 推文2：使用体验
 
 ```
-做了一个开源的AI绘图工具 DreamForge！
+用 Midjourney 一年多了，最近发现了个国产平替——DreamForge
 
-🤔 为什么做？
-市面上的AI工具大多追求"写实"，但我觉得梦幻风格更有潜力。
+✅ 中文理解比 MJ 强
+✅ 不用翻墙，访问速度快
+✅ 免费额度够用，新手友好
+✅ 参考图功能超实用
 
-🛠 技术栈：
-• Vite + React
-• GPT Image 2 API
-• Vercel 部署
-• 全栈开源
+强烈推荐给想入门 AI 绘画的朋友！
 
-✅ 特点：
-• 梦幻风格专精
-• 简单友好的UI
-• 支持参考图上传
-• 新用户免费试用
+🔗 https://dreamforge-679j.vercel.app
 
-🔗 dreamforge-679j.vercel.app
-💻 github.com/Dayangyang-Byte/dreamforge
-
-#开源 #AI #Midjourney #独立开发
+#AI工具 #AIGC #梦境AI
 ```
 
 ---
 
-### 推文 3：对比 Midjourney
+## 推文3：技巧分享型
 
 ```
-如果你用不起 Midjourney，试试这个替代方案 👇
+分享一个 AI 画图小技巧：
 
-DreamForge（梦境AI）
-• 国内可直接访问
-• 专为梦幻/电影感风格优化
-• 新用户免费试用
-• 开源可自定义
+「主体 + 环境 + 氛围 + 灯光 + 风格 + 色彩」
 
-🔗 dreamforge-679j.vercel.app
-💻 github.com/Dayangyang-Byte/dreamforge
+用 DreamForge 生成的第一张图：
 
-#AI绘画 #Midjourney替代品 #AI工具
+📸 一个穿白裙子的女孩站在森林深处，周围有萤火虫发光，雾气缭绕，暖色调灯光，梦幻电影感，柔和的蓝紫色调
+
+效果超出预期！
+
+🔗 https://dreamforge-679j.vercel.app
+
+#AI绘画 #提示词 #梦境AI
 ```
 
 ---
 
-## 📋 发布步骤
+## 推文4：长文型（500字以内）
 
-1. 打开 https://twitter.com 或 https://x.com
-2. 登录你的账号
-3. 点击"发推"按钮
-4. 粘贴文案
-5. 可选：添加图片（生成的示例图）
-6. 点击"发布"
+```
+最近深入体验了 DreamForge（梦境AI），一个国产 AI 画图平台，分享一下使用感受：
+
+【为什么选择它】
+之前一直用 Midjourney，但国内访问需要梯子，而且中文提示词经常理解偏差。DreamForge 原生支持中文，说什么都懂。
+
+【三种风格】
+• 梦幻电影感：海报、封面、艺术创作首选
+• 动漫插画风：二次元、游戏原画、角色设计
+• 写实摄影风：产品图、人像写真、场景渲染
+
+【特色功能】
+• 上传参考图：最多5张，AI 会根据参考图风格生成
+• 多模型选择：Forge / GPT Image 2 / Nannabanan
+• 隐私保护：生成内容默认私有
+
+【价格】
+新手注册送免费积分，免费额度足够体验。付费也很透明：
+- Forge：1积分/张
+- GPT Image 2：2-5积分/张（看分辨率）
+
+【适合谁】
+设计师、自媒体、电商卖家、二次元爱好者、普通用户
+
+🔗 https://dreamforge-679j.vercel.app
+GitHub: https://github.com/Dayangyang-Byte/dreamforge
+
+#AI绘画 #AIGC #DreamForge #梦境AI #国产AI
+```
 
 ---
 
-## 💡 建议
+## 发布建议
 
-- 发 **3-5 条**不同的推文
-- 间隔 **1-2 小时**发一条
-- 可以在推文中 @一些AI相关的账号
-- 添加 #标签 增加曝光
-- 如果可能，附上生成的图片截图
+### 最佳发布时间
+- 周二、周四、周六 上午 9-11 点
+- 周五下午 3-5 点
+- 周日晚上 8-10 点
+
+### 配图建议
+- 至少配 1 张 DreamForge 生成的图片
+- 推荐：梦幻电影感风格的图（最有吸引力）
+- 可以配网站截图展示界面
+
+### 互动技巧
+1. 发布后 1 小时内回复所有评论
+2. 转发到相关话题（#AI绘画 #AIGC）
+3. 可以 @ 一些 AI 领域 KOL 增加曝光
+
+###  hashtag 组合
+核心标签：
+- #DreamForge
+- #梦境AI
+- #AI绘画
+- #AIGC
+
+可选标签：
+- #Midjourney平替
+- #国产AI
+- #AI工具
+- #提示词
 
 ---
 
-## 📊 预期效果
+## 检查清单
 
-Twitter 推文可以：
-- ✅ 带来直接流量
-- ✅ 增加 GitHub Star
-- ✅ 建立个人品牌
-- ⚠️ 需要持续运营才能看到效果
-
----
-
-**发布完告诉我，我帮你检查效果！**
+发布前确认：
+- [ ] 字数在 500 字以内
+- [ ] 链接正确可点击
+- [ ] 配图已上传（至少1张）
+- [ ] hashtag 添加完整
+- [ ] 无错别字
