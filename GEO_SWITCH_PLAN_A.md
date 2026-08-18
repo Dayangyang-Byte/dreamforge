@@ -39,7 +39,7 @@ www.mengjing233.cn → A记录 → 76.76.21.21
 
 ## 📋 Step 2: 阿里云DNS配置
 
-### 2.1 修改主域记录
+### 2.1 修改主域记录（关键！根域用A记录）
 **当前**（需要删除）：
 ```
 类型: A
@@ -48,21 +48,15 @@ www.mengjing233.cn → A记录 → 76.76.21.21
 TTL: 10分钟
 ```
 
-**改为**（按Vercel提示）：
-```
-类型: CNAME
-名称: @
-值: cname.vercel-dns.com
-TTL: 10分钟
-```
-
-**或者**（如果Vercel要求A记录）：
+**改为**（Vercel官方推荐）：
 ```
 类型: A
 名称: @
 值: 76.76.21.21
 TTL: 10分钟
 ```
+
+> ⚠️ **注意**：根域（裸域）不要用CNAME，会导致MX等记录失效。必须用A记录指向Vercel的Anycast IP `76.76.21.21`
 
 ### 2.2 新增www记录
 ```
@@ -118,6 +112,28 @@ server {
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
+
+### 3.3 申请SSL证书（关键！）
+**API子域必须HTTPS，否则浏览器会拦截Mixed Content**：
+
+```bash
+# 安装certbot（如未安装）
+sudo apt update && sudo apt install -y certbot python3-certbot-nginx
+
+# 为api子域申请证书
+sudo certbot --nginx -d api.mengjing233.cn
+
+# 按提示输入邮箱、同意条款，选择是否重定向HTTP→HTTPS（选是）
+
+# 验证证书状态
+sudo certbot certificates
+```
+
+> ⚠️ **注意**：这是计划中最容易遗漏的步骤！没有HTTPS证书会导致：
+> - 浏览器报 "Mixed Content" 错误
+> - API请求被拦截
+> - CORS配置即使正确也无效
+> - 排查时误以为是CORS问题
 
 ---
 
@@ -221,16 +237,18 @@ curl -H "Origin: https://mengjing233.cn" -I https://api.mengjing233.cn/api/
 
 ### 坑1: API跨域（CORS）
 - ✅ Express已配置白名单允许 `https://mengjing233.cn`
-- ✅ 前端代码中API地址已改为 `https://api.mengjing233.cn`
+- ✅ 前端代码中API地址已改为 `https://api.mengjing233.cn`（注意HTTPS！）
+- ✅ api子域已申请SSL证书（certbot）
 - ✅ 微信支付回调地址已同步修改（如适用）
 
 ### 坑2: Vercel国内访问稳定性
 - ⚠️ 上线后在国内实测几天
-- 如果不稳定，加Cloudflare免费版：
+- 如果不稳定，加Cloudflare免费版代理：
   ```
   阿里云DNS: mengjing233.cn → CNAME → xxx.cname.cloudflare.com
   Cloudflare: 代理模式开启
   ```
+- 再不稳定才考虑备案+国内CDN
 
 ---
 
@@ -263,10 +281,11 @@ mengjing233.cn → A记录 → 38.76.217.230
 | Step 1: Vercel配置 | 10分钟 |
 | Step 2: 阿里云DNS | 10分钟 |
 | Step 3: nginx配置 | 15分钟 |
+| Step 3.3: SSL证书申请 | 10分钟 |
 | Step 4: Express CORS | 15分钟 |
-| Step 5: 切换DNS | 30分钟（含传播） |
+| Step 5: 前端API地址修改 | 15分钟 |
 | Step 6: 验证 | 20分钟 |
-| **总计** | **约2小时** |
+| **总计** | **约1.5小时** |
 
 ---
 
