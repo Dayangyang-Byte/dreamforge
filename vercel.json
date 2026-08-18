@@ -12,6 +12,8 @@
     }
   ],
   "rewrites": [
+    { "source": "/generated/(.*)", "destination": "https://api.mengjing233.cn/generated/$1" },
+    { "source": "/thumbnails/(.*)", "destination": "https://api.mengjing233.cn/thumbnails/$1" },
     { "source": "/en/faq", "destination": "/en/faq.html" },
     { "source": "/en/prompts", "destination": "/en/prompts.html" },
     { "source": "/(.*)", "destination": "/index.html" }
