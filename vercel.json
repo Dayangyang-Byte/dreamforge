@@ -3,7 +3,9 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "installCommand": "npm install",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/$1" }
+  "routes": [
+    { "src": "/en/faq", "dest": "/en/faq.html" },
+    { "src": "/en/prompts", "dest": "/en/prompts.html" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
