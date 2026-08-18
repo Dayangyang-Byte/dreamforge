@@ -1,214 +1,138 @@
-# DreamForge Product Hunt 提交指南
+# DreamForge Product Hunt 发布计划
 
-## 一、准备材料
-
-### 1. 产品截图（5 张）
-
-需要上传以下截图：
-- 主图（Hero Image）：展示产品界面或生成效果
-- 截图 2：功能展示
-- 截图 3：风格示例
-- 截图 4：使用教程
-- 截图 5：效果对比
-
-**建议**：
-- 每张截图尺寸：1200x800 像素
-- 格式：PNG 或 JPG
-- 添加产品 logo 水印
+> 目标：在 Product Hunt 获得首批 upvotes，带来初始流量和 GitHub Stars
 
 ---
 
-### 2. 产品标题
+## 📅 发布时间
 
-**主标题**：DreamForge
-**副标题**：Free AI Dream Art Generator - Create Cinematic, Dreamy Images
+**推荐时间**：周二或周三 00:01 PST（美国太平洋时间）
+
+**换算北京时间**：
+- 周二 00:01 PST = 周三 16:01 北京时间
+- 周三 00:01 PST = 周三 17:01 北京时间
 
 ---
 
-### 3. 产品描述（英文）
+## 🎨 素材准备清单
 
+### 1. 主图（必须）
+- **尺寸**：1200 x 800 px（16:9）
+- **内容**：DreamForge 产品界面截图 或 生成效果展示
+- **要求**：高对比度，一眼看清产品用途
+
+### 2. 视频（强烈推荐）
+- **时长**：60 秒以内
+- **内容**：快速演示 3-5 个生成案例
+- **格式**：MP4，横版
+- **上传方式**：直接上传或 YouTube 链接
+
+### 3. 封面图（Cover Image）
+- **尺寸**：1200 x 675 px
+- **内容**：最吸引人的生成图
+
+### 4. 补充图片（可选）
+- 准备 3-4 张不同风格的生成作品
+- 展示产品多样性
+
+---
+
+## 📝 发布文案模板
+
+### 标题（Tagline）
 ```
-DreamForge is a free AI image generator that specializes in dreamy, cinematic art styles. Unlike other tools that focus on realism, DreamForge excels at creating ethereal, fantasy-inspired artwork.
-
-Key Features:
-• 100% Free - No credit card required
-• Dreamy & Cinematic Styles - Perfect for fantasy art
-• Easy to Use - Simple prompt interface
-• Unlimited Generations - No daily limits
-• High Quality Output - Professional-grade results
-
-How to Use:
-1. Enter your prompt (e.g., "A mystical forest at dawn with golden light filtering through mist")
-2. Click Generate
-3. Download your dreamy artwork
-
-Perfect for:
-• Dream artists and illustrators
-• Fantasy game designers
-• Social media content creators
-• Book cover designers
-• Anyone who loves dreamy, cinematic art
-
-Visit: https://dreamforge-679j.vercel.app
-GitHub: https://github.com/Dayangyang-Byte/dreamforge
+DreamForge — 梦幻风格 AI 图像生成器
+```
+或
+```
+DreamForge — 中文原生支持的梦幻 AI 画图工具
 ```
 
----
+### 描述（Description）
+```
+DreamForge（梦境AI）是一款专注于梦幻电影感风格的 AI 图像生成工具。
 
-### 4. 产品介绍视频（可选）
+✨ 核心特点：
+• 中文原生支持，提示词零门槛
+• 三种专业风格：梦幻电影感 / 动漫插画 / 写实摄影
+• 上传参考图，一键风格迁移
+• 新用户注册送免费积分
 
-建议制作一个 30-60 秒的短视频：
-- 展示生成过程
-- 展示不同风格效果
-- 突出免费特点
+🔗 立即体验：https://dreamforge-679j.vercel.app
+📂 开源代码：https://github.com/Dayangyang-Byte/dreamforge
 
----
+#AI #ImageGeneration #MidjourneyAlternative
+```
 
-### 5. Logo
+### 评论回复模板
 
-尺寸：512x512 像素
-格式：PNG（透明背景）
+**当有人问 "How is this different from Midjourney?"**
+```
+Great question! While Midjourney is the industry leader for art quality, DreamForge is built specifically for Chinese users:
 
----
+• Native Chinese support — no translation needed
+• Optimized for dreamy/cinematic styles
+• Pay-per-image pricing instead of monthly subscription
+• Open source on GitHub
 
-## 二、提交步骤
+We're not trying to replace MJ, but offer a more accessible alternative for Chinese creators.
+```
 
-### 1. 登录 Product Hunt
-访问：https://www.producthunt.com/login
-使用 GitHub 或 Google 账号登录
+**当有人问 "Is it free?"**
+```
+Yes! New users get free credits to try the core features. After that, pricing is:
+• Forge model: 1 credit per image
+• GPT Image 2: 2-5 credits per image (based on resolution)
 
-### 2. 提交产品
-1. 点击右上角 "Submit Product"
-2. 填写产品信息：
-   - 名称：DreamForge
-   - 标签：AI, Image Generator, Dream Art, Free Tool
-   - 类别：Creator Tools
-   - 网站：https://dreamforge-679j.vercel.app
-
-### 3. 上传截图和 Logo
-按照上面的要求上传图片
-
-### 4. 填写描述
-复制上面的英文描述
-
-### 5. 选择发布日
-建议选择周二到周四发布（流量最好）
+No monthly subscription required. Check it out: https://dreamforge-679j.vercel.app
+```
 
 ---
 
-## 三、发布前准备
+## 🚀 发布当天行动清单
 
-### 1. 提前互动
-- 关注 Product Hunt 上的 AI 类项目
-- 给其他产品点赞、评论
-- 建立账号活跃度
+### 发布前 30 分钟
+- [ ] 确认所有素材已准备好
+- [ ] 登录 Product Hunt 账号
+- [ ] 填写发布表单
 
-### 2. 通知联系人
-- 在 Twitter/X 发布预告
-- 在 Discord/Reddit 社区分享
-- 给朋友和粉丝发邀请
+### 发布后 30 分钟（关键！）
+- [ ] 每条评论都回复
+- [ ] 感谢 early upvoters
+- [ ] 分享链接到 Twitter/即刻
 
-### 3. 准备回复
-准备一些常见问题的回答：
-- "Is it really free?" → Yes, 100% free, no credit card needed
-- "How many images can I generate?" → Unlimited
-- "What makes it different?" → Specializes in dreamy, cinematic styles
-- "Where is the source code?" → https://github.com/Dayangyang-Byte/dreamforge
+### 发布后 24 小时
+- [ ] 持续监控评论，及时回复
+- [ ] 鼓励朋友/社区成员 upvote
+- [ ] 分享发布链接到社交媒体
 
 ---
 
-## 四、发布当天
+## 📊 预期效果
 
-### 1. 保持在线
-发布当天要时刻在线，及时回复评论
-
-### 2. 互动策略
-- 回复每一条评论
-- 感谢每个 upvote
-- 分享生成示例图片
-
-### 3. 数据统计
-- 记录 upvotes 数量
-- 记录评论数
-- 记录点击量
+| 指标 | 第1天 | 第7天 | 第30天 |
+|------|-------|-------|--------|
+| Upvotes | 20-50 | 50-100 | 100+ |
+| 网站点击 | 50-100 | 200-500 | 500+ |
+| GitHub Stars | +5-10 | +20-30 | +50+ |
+| 新注册用户 | 10-30 | 50-100 | 200+ |
 
 ---
 
-## 五、成功指标
+## ⚠️ 注意事项
 
-| 指标 | 目标 |
-|------|------|
-| Upvotes | 100+ |
-| 评论 | 20+ |
-| 网站点击 | 500+ |
-| GitHub Stars | 50+ |
-| 产品页排名 | Day #1 或 Day #2 |
+1. **不要刷 upvote** — Product Hunt 会封号
+2. **真诚互动** — 回复每一条评论
+3. **准备好 Q&A** — 提前想好常见问题答案
+4. **选择对的时机** — 避开重大节日和黑客马拉松
 
 ---
 
-## 六、后续跟进
+## 🔗 相关链接
 
-### 1. 感谢评论
-- 回复所有正面评论
-- 感谢分享的用户
-
-### 2. 分享成果
-- 在 Twitter 发布感谢帖
-- 在 Discord 分享成绩
-- 更新 README 添加 Product Hunt 徽章
-
-### 3. 持续迭代
-- 根据用户反馈改进产品
-- 添加新功能
-- 优化用户体验
+- Product Hunt 提交页面：https://www.producthunt.com/posts/submit
+- 最佳实践指南：https://support.producthunt.com/hc/en-us/articles/360000106868-How-to-launch-on-Product-Hunt
 
 ---
 
-## 七、时间规划
-
-| 时间 | 任务 |
-|------|------|
-| 今天 | 准备截图、Logo、描述 |
-| 明天 | 提交产品，选择发布日 |
-| 发布前 3 天 | 开始预热，通知联系人 |
-| 发布前 1 天 | 最终检查，准备回复 |
-| 发布当天 | 全程在线，互动回复 |
-| 发布后 1 周 | 数据分析，持续互动 |
-
----
-
-## 八、注意事项
-
-### ✅ 应该做的
-1. 保持产品页活跃，及时回复
-2. 分享真实的使用案例
-3. 感谢所有支持者
-4. 持续迭代产品
-
-### ❌ 不应该做的
-1. 不要刷票（会被 ban）
-2. 不要 Spam 评论
-3. 不要隐瞒产品的免费性质
-4. 不要承诺做不到的功能
-
----
-
-## 九、需要准备的文件
-
-请准备以下文件：
-1. ✅ 产品截图 5 张
-2. ✅ 产品 Logo 1 个
-3. ✅ 产品介绍视频（可选）
-4. ✅ 产品描述（已提供）
-5. ✅ 发布日期（待定）
-
----
-
-## 十、下一步
-
-**请告诉我：**
-1. 您准备好截图和 Logo 了吗？
-2. 您想哪天发布？
-3. 需要我帮您制作截图吗？
-
-**我会在您准备好后，帮您完成提交！**
+*计划书由 Hermes Agent 创建，可根据实际情况调整*
