@@ -3,9 +3,17 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "installCommand": "npm install",
-  "routes": [
-    { "src": "/en/faq", "dest": "/en/faq.html" },
-    { "src": "/en/prompts", "dest": "/en/prompts.html" },
-    { "src": "/(.*)", "dest": "/$1" }
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "dreamforge-679j.vercel.app" }],
+      "destination": "https://mengjing233.cn/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/en/faq", "destination": "/en/faq.html" },
+    { "source": "/en/prompts", "destination": "/en/prompts.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
