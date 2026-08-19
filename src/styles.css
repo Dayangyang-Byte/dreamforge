@@ -1261,38 +1261,30 @@ button {
   position: absolute;
   top: 14px;
   right: 14px;
-  width: 44px;
-  min-height: 44px;
+  width: 48px;
+  height: 48px;
   display: inline-grid;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.84);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055)),
-    rgba(4, 8, 22, 0.4);
+  border: 2px solid rgba(255, 100, 100, 0.6);
+  border-radius: 50%;
+  color: #ff6b6b;
+  background: rgba(20, 5, 5, 0.9);
   cursor: pointer;
-  z-index: 10;
+  z-index: 100;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 100, 100, 0.3);
+}
+
+.announcement-dismiss-button:hover {
+  transform: scale(1.1);
+  background: rgba(255, 100, 100, 0.2);
+  border-color: rgba(255, 100, 100, 0.9);
 }
 
 .announcement-dismiss-button:active {
   transform: scale(0.95);
-  background: rgba(255, 100, 100, 0.3);
-}
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 10px 24px rgba(0, 0, 0, 0.22);
-  cursor: pointer;
-}
-
-.announcement-dismiss-button:hover {
-  color: #ffffff;
-  border-color: rgba(107, 220, 255, 0.42);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(107, 220, 255, 0.1)),
-    rgba(4, 8, 22, 0.48);
+  background: rgba(255, 100, 100, 0.4);
 }
 
 .announcement-badge {

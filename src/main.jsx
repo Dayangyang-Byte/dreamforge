@@ -2630,7 +2630,7 @@ function App() {
                 closeAnnouncementOverlay();
               }}
             >
-              <X size={20} />
+              <X size={24} strokeWidth={2.5} />
             </button>
             <div className="announcement-badge">
               <Bell size={15} />
