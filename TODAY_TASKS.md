@@ -14,6 +14,7 @@
 | 3 | 即刻动态发布 | ✅ 完成 | - |
 | 4 | Reddit Post 1 | ✅ 完成 | （待用户提供链接） |
 | 5 | Product Hunt 发布 | ✅ 完成 | https://www.producthunt.com/products/dreamforge |
+| 6 | Twitter推文1 | ✅ 完成 | https://twitter.com/Dayangyang-Byte |
 
 ---
 
@@ -23,8 +24,7 @@
 
 | # | 任务 | 预计时间 | 说明 |
 |---|------|----------|------|
-| 6 | Twitter推文1 | 5分钟 | 产品介绍型 |
-| 7 | Twitter推文2 | 5分钟 | 使用体验型 |
+| 7 | Twitter推文2 | 5分钟 | 使用体验型，间隔2-3小时 |
 
 ### 中优先级（可选）
 
@@ -42,11 +42,23 @@
 
 ---
 
-## 🎯 推荐执行顺序
+## 🎯 下一步：Twitter推文2（2-3小时后）
 
-1. **Twitter推文1**（产品介绍）→ 立即发
-2. **Twitter推文2**（体验分享）→ 间隔2-3小时
-3. **即刻动态2-3** → 如果还有时间
+```
+用 Midjourney 一年多了，最近发现了个国产平替——DreamForge
+
+✅ 中文理解比 MJ 强
+✅ 不用翻墙，访问速度快
+✅ 免费额度够用，新手友好
+✅ 参考图功能超实用
+
+强烈推荐给想入门 AI 绘画的朋友！
+
+🔗 https://mengjing233.cn
+GitHub: https://github.com/Dayangyang-Byte/dreamforge
+
+#AI工具 #AIGC #梦境AI #Midjourney平替
+```
 
 ---
 
@@ -55,6 +67,7 @@
 - Twitter推文字数限制约500字
 - 每次发布间隔2-3小时，避免被平台识别
 - 小红书账号需协调后再开始
+- Product Hunt 发布当天保持在线回复评论
 
 ---
 
