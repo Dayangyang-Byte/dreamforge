@@ -31,6 +31,12 @@ if (window.location.pathname.startsWith("/admin")) {
 }
 
 const apiBase = import.meta.env.VITE_API_BASE || "";
+const trackedPaidOrders = new Set();
+function trackEvent(name, params = {}) {
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("event", name, params);
+  }
+}
 const maxReferences = 5;
 const maxReferenceImageEdge = 1600;
 const referenceImageQuality = 0.82;
@@ -1913,6 +1919,7 @@ function App() {
       setUser(data.user);
       setActiveImage(0);
       loadHistory(token);
+      trackEvent("generate_image", { model: submitForm.model || "unknown" });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1937,6 +1944,7 @@ function App() {
       setUser(data.user);
       setAuthOpen(false);
       setRedeemMessage("");
+      trackEvent(authMode === "register" ? "sign_up" : "login", { method: "account" });
       await refreshSession();
     } catch (err) {
       setAuthError(err.message);
@@ -1992,6 +2000,7 @@ function App() {
       if (!response.ok) throw new Error(localizeMessage(data.error || "微信充值订单创建失败", language));
       setRechargeOrder(data.order);
       setRechargeMessage(language === "en" ? "Please scan with WeChat Pay. Credits are added after admin confirmation." : "请使用微信扫码支付，付款后等待管理员确认到账。");
+      trackEvent("begin_checkout", { value: Number(selectedRechargeAmount) || 0, currency: "CNY" });
     } catch (err) {
       setRechargeMessage(err.message);
     } finally {
@@ -2012,6 +2021,14 @@ function App() {
       if (data.user) setUser(data.user);
       if (data.order?.status === "paid") {
         setRechargeMessage(language === "en" ? `Recharge confirmed. ${data.order.credits} credits added.` : `充值成功，已到账 ${data.order.credits} 积分。`);
+        if (!trackedPaidOrders.has(data.order.id)) {
+          trackedPaidOrders.add(data.order.id);
+          trackEvent("purchase", {
+            value: Number(data.order.amountYuan ?? data.order.credits) || 0,
+            currency: "CNY",
+            transaction_id: String(data.order.id)
+          });
+        }
       } else if (data.order?.status === "failed") {
         setRechargeMessage(localizeMessage(data.order.error || "充值订单已关闭或失败，请重新下单。", language));
       }
