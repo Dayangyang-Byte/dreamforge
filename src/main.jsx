@@ -1713,6 +1713,7 @@ function App() {
   const [announcementPanelOpen, setAnnouncementPanelOpen] = useState(false);
   const [announcementHistory, setAnnouncementHistory] = useState([]);
   const [announcementHistoryLoading, setAnnouncementHistoryLoading] = useState(false);
+  const [touchStartY, setTouchStartY] = useState(null);
   const fileInputRef = useRef(null);
   const templateMenuRef = useRef(null);
   const text = uiText[language] || uiText.zh;
@@ -2611,15 +2612,25 @@ function App() {
           aria-modal="true"
           aria-labelledby="site-announcement-title"
           onClick={closeAnnouncementOverlay}
+          onTouchStart={() => setTouchStartY && setTouchStartY(event.touches[0].clientY)}
+          onTouchEnd={(event) => {
+            if (touchStartY && event.changedTouches[0].clientY - touchStartY > 100) {
+              closeAnnouncementOverlay();
+            }
+          }}
         >
-          <div className="announcement-modal" onClick={(event) => event.stopPropagation()}>
+          <div className="announcement-modal" onClick={(event) => event.stopPropagation()} onTouchMove={(event) => event.stopPropagation()}>
             <button
               type="button"
               className="announcement-dismiss-button"
               aria-label={t("close")}
               onClick={closeAnnouncementOverlay}
+              onTouchEnd={(event) => {
+                event.stopPropagation();
+                closeAnnouncementOverlay();
+              }}
             >
-              <X size={16} />
+              <X size={20} />
             </button>
             <div className="announcement-badge">
               <Bell size={15} />

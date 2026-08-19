@@ -1261,8 +1261,8 @@ button {
   position: absolute;
   top: 14px;
   right: 14px;
-  width: 36px;
-  min-height: 36px;
+  width: 44px;
+  min-height: 44px;
   display: inline-grid;
   place-items: center;
   padding: 0;
@@ -1272,6 +1272,15 @@ button {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055)),
     rgba(4, 8, 22, 0.4);
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.announcement-dismiss-button:active {
+  transform: scale(0.95);
+  background: rgba(255, 100, 100, 0.3);
+}
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
     0 10px 24px rgba(0, 0, 0, 0.22);
