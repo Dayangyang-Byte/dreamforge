@@ -5,6 +5,7 @@ import {
   Bell,
   Check,
   ChevronDown,
+  X,
   Coins,
   Crown,
   Download,
@@ -1871,6 +1872,16 @@ function App() {
     setAnnouncementOpen(false);
   }
 
+  function closeAnnouncementOverlay() {
+    setAnnouncementOpen(false);
+  }
+
+  function handleAnnouncementOverlayKeyDown(event) {
+    if (event.key === "Escape") {
+      closeAnnouncementOverlay();
+    }
+  }
+
   async function openAnnouncementPanel() {
     setAnnouncementPanelOpen(true);
     setAnnouncementHistoryLoading(true);
@@ -1886,6 +1897,12 @@ function App() {
       setAnnouncementHistoryLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!announcementOpen) return undefined;
+    window.addEventListener("keydown", handleAnnouncementOverlayKeyDown);
+    return () => window.removeEventListener("keydown", handleAnnouncementOverlayKeyDown);
+  }, [announcementOpen]);
 
   async function submit(event) {
     event?.preventDefault();
@@ -2588,8 +2605,22 @@ function App() {
       </footer>
 
       {announcementOpen && announcement?.enabled && (
-        <div className="announcement-overlay" role="dialog" aria-modal="true" aria-labelledby="site-announcement-title">
-          <div className="announcement-modal">
+        <div
+          className="announcement-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="site-announcement-title"
+          onClick={closeAnnouncementOverlay}
+        >
+          <div className="announcement-modal" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="announcement-dismiss-button"
+              aria-label={t("close")}
+              onClick={closeAnnouncementOverlay}
+            >
+              <X size={16} />
+            </button>
             <div className="announcement-badge">
               <Bell size={15} />
               <span>{t("announcement")}</span>
