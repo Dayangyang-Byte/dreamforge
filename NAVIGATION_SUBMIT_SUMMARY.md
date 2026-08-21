@@ -7,48 +7,37 @@
 - **链接**: https://futuretools.io/submit-a-tool
 - **确认**: 你已收到"工具已提交！"确认页
 
----
-
-## 🔄 进行中
-
 ### 2. Futurepedia
-- **注册**: ✅ 已完成（用Gmail注册）
-- **状态**: ⚠️ 页面有错误，需要手动提交
+- **状态**: 🔄 已注册，待提交
+- **说明**: 需先登录（Gmail账号），再访问 submit-tool 页面
+- **链接**: https://www.futurepedia.io/submit-tool
 
-**请手动操作：**
-1. 打开页面：https://www.futurepedia.io/submit-tool
-2. 确保已登录（右上角显示你的头像）
-3. 填写以下信息：
-
-| 字段 | 内容 |
-|------|------|
-| Tool Name | DreamForge |
-| Tagline | Chinese-native AI image generation platform |
-| Description | Open-source AI image generation platform optimized for Chinese users. Create stunning dreamy cinematic images with native Chinese prompt support. Free credits for new users. |
-| Website URL | https://mengjing233.cn |
-| GitHub URL | https://github.com/Dayangyang-Byte/dreamforge |
-| Category | Art & Design |
-
-4. 上传封面图：使用一张AI生成的梦幻风格图片
-5. 点击 Submit
+### 3. Product Hunt
+- **状态**: 🔄 待确认
+- **链接**: https://www.producthunt.com/submissions
 
 ---
 
-## ⏳ 跳过
+## ❌ 跳过
 
-### 3. TheresAnAIForThat
-- **状态**: ❌ 无法访问（被阻止）
+### TheresAnAIForThat
+- **状态**: 无法访问（IP被阻止）
 - **原因**: 该网站阻止了中国IP访问
 
 ---
 
-## 📊 今日进度
+## 📋 下一步操作
 
-| 平台 | 状态 | 预期流量 |
-|------|------|----------|
-| Future Tools | ✅ 已提交 | +3-5 UV |
-| Futurepedia | 🔄 待确认 | +5-10 UV |
-| TheresAnAIForThat | ❌ 跳过 | - |
+### Futurepedia 提交
+1. 登录 https://www.futurepedia.io/login
+2. 用Gmail账号登录：yangdahai72@gmail.com
+3. 点击 "Submit a Tool"
+4. 填写表单并提交
+
+### Product Hunt 检查
+1. 打开 https://www.producthunt.com/submissions
+2. 确认DreamForge是否已提交
+3. 如果未提交，重新提交（可能错过周三16:01，但仍可提前发布）
 
 ---
 
