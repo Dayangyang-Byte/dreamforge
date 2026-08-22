@@ -1,81 +1,101 @@
 # DreamForge Product Hunt 提交指南
 
-## ✅ 已完成
-- Product Hunt 新手引导已完成
+> 更新时间：2026-08-21 22:30
 
 ---
 
-## 📋 提交步骤
+## 📋 已打开的页面
 
-### 第一步：打开提交页面
+浏览器已打开：**https://www.producthunt.com/posts/new**
 
-点击这里：https://www.producthunt.com/submit
+你应该能看到一个"Get started"按钮。
 
-### 第二步：填写表单
+---
 
-| 字段 | 填写内容 |
-|------|----------|
-| **Name** | DreamForge |
+## ✏️ 填写信息
+
+点击"Get started"后，填写以下信息：
+
+### 基本信息
+| 字段 | 内容 |
+|------|------|
+| **Product Name** | DreamForge |
 | **Tagline** | Chinese-native AI image generation platform |
-| **Description** | Open-source AI image generation platform optimized for Chinese users. Create stunning dreamy cinematic images with native Chinese prompt support. |
+| **Description** | Open-source AI image generation platform optimized for Chinese users. Create stunning dreamy cinematic images with native Chinese prompt support. Free for new users. |
 | **Website** | https://mengjing233.cn |
 | **GitHub** | https://github.com/Dayangyang-Byte/dreamforge |
-| **Category** | Art & Design |
-| **Launch Date** | 今天 (2026-08-21) |
 
-### 第三步：上传封面图
+### 分类
+| 字段 | 选择 |
+|------|------|
+| **Category** | Art & Design > AI Generative Media |
 
-- 大小：1280x640 或更大
-- 格式：PNG/JPG
-- 内容：选一张梦幻风格的AI生成图片
-
----
-
-## ⏰ 最佳发布时间
-
-- 太平洋时间早上8点
-- 北京时间：**晚上8点 或 早上8点**
-- 今天是周三晚上8点已过，可以明天（周四）早上发布
+### 封面图
+- 上传一张梦幻风格的AI生成图
+- 建议尺寸：1280x720 或更大
+- 展示DreamForge的核心能力（梦幻电影感）
 
 ---
 
-## 📝 发布后发帖
+## 📝 完整文案（可复制）
 
-### Twitter 文案
+**Tagline:**
 ```
-We just launched on @ProductHunt! 
-
-DreamForge is an open-source AI image generation platform built for Chinese users. Create dreamy cinematic images with native Chinese prompt support.
-
-Check it out: https://ph.link/xxxxx
-
-#ProductHunt #DreamForge #AI
+Chinese-native AI image generation platform
 ```
 
-### 即刻文案
+**Description:**
 ```
-🚀 DreamForge 上线 Product Hunt 啦！
+DreamForge is an open-source AI image generation platform optimized for Chinese users. Unlike Midjourney and other tools that require English prompts, DreamForge natively supports Chinese language input.
 
-开源AI图像生成平台，专为中文用户打造
-支持原生中文提示词
-新用户免费赠送积分
+Key Features:
+✨ Native Chinese prompt support - describe your vision in Chinese
+✨ Dreamy cinematic style - specialized in atmospheric, cinematic images
+✨ Free for new users - register and get free credits to try
+✨ Open source - built on GitHub, continuously improved
 
-立即体验：https://mengjing233.cn
+Perfect for:
+- Designers creating concept art
+- Game developers needing atmospheric references
+- Content creators making dreamy visuals
+- Anyone who finds English prompt barriers frustrating
 
-#梦境AI #ProductHunt
+Try it free: https://mengjing233.cn
+GitHub: https://github.com/Dayangyang-Byte/dreamforge
 ```
 
 ---
 
-## ⚠️ 如果提交页面还是404
+## ✅ 提交前检查清单
 
-说明需要等待几个小时的审核期才能提交。
-
-**建议**：
-1. 先把所有信息准备好
-2. 明天早上8点再试一次提交
-3. 同时继续发知乎/Twitter/即刻内容引流
+- [ ] Product Name: DreamForge
+- [ ] Tagline 已填写
+- [ ] Description 已填写
+- [ ] Website: https://mengjing233.cn
+- [ ] GitHub: https://github.com/Dayangyang-Byte/dreamforge
+- [ ] Category: Art & Design
+- [ ] 封面图已上传
+- [ ] 所有信息无误
 
 ---
 
-*更新时间：2026-08-21 20:50*
+## 🚀 提交步骤
+
+1. 填写完所有信息
+2. 点击"Submit"或"Publish"按钮
+3. 等待确认页面
+4. 截图发给我确认提交成功
+
+---
+
+## ⏰ 提交时间建议
+
+**今晚尽快提交**，不要等到明天！
+
+Product Hunt的发布机制是：
+- 今天提交，明天北京时间16:01发布
+- 这是最关键的推广机会
+
+---
+
+**有问题随时问我！**
