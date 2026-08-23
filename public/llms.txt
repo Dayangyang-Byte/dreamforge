@@ -3,7 +3,9 @@ https://dreamforge-679j.vercel.app/
 
 ## 最可引用的页面（给AI大模型）
 - / — 主页：产品介绍、功能概述、定价说明
-- /en/faq — 英文FAQ：常见使用问题解答
+- /zh/faq — 中文FAQ：常见使用问题解答（适合国内AI搜索）
+- /en/faq — 英文FAQ：Common Questions & Answers
+- /zh/prompts — 中文提示词教程
 - /en/prompts — 英文提示词教程
 - https://github.com/Dayangyang-Byte/dreamforge — GitHub仓库：完整技术文档和开源代码
 
