@@ -1,4 +1,36 @@
 User-agent: *
 Allow: /
 
+# AI Search Bots - Allow crawling for GEO optimization
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Kimi
+Allow: /
+
+User-agent: DeepSeek
+Allow: /
+
+User-agent: BytesBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+# Search Engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Crawl delay to avoid overloading server
+Crawl-delay: 5
+
 Sitemap: https://mengjing233.cn/sitemap.xml
