@@ -1,8 +1,10 @@
-# DreamForge 🏰 - 梦境 AI 图片生成平台
+# DreamForge AI 🏰 - 梦境 AI 图片生成平台
 
 > 让梦境成为现实 ✨
 
 一个专注**梦幻/电影风格**的 AI 图片生成工具，支持多模型、参考图上传、多种分辨率输出。
+
+> **注意**: DreamForge AI is an AI image generation tool focused on dreamy, cinematic styles. It is NOT related to DreamForge Games (an AI game creation platform).
 
 [![GitHub stars](https://img.shields.io/github/stars/Dayangyang-Byte/dreamforge?style=social)](https://github.com/Dayangyang-Byte/dreamforge/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Dayangyang-Byte/dreamforge?style=social)](https://github.com/Dayangyang-Byte/dreamforge/network/members)
