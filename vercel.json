@@ -18,6 +18,9 @@
     { "source": "/en/prompts", "destination": "/en/prompts.html" },
     { "source": "/zh/faq", "destination": "/zh/faq.html" },
     { "source": "/zh/prompts", "destination": "/zh/prompts.html" },
+    { "source": "/gpt-image2-prompts.html", "destination": "/gpt-image2-prompts.html" },
+    { "source": "/demo-uiverse.html", "destination": "/demo-uiverse.html" },
+    { "source": "/ui-preview.html", "destination": "/ui-preview.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
