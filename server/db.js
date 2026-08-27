@@ -337,12 +337,13 @@ export function saveUserStore(store) {
 export function upsertUser(user) {
   getDatabase()
     .prepare(
-      `INSERT INTO users (account, password_hash, credits, token, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)
+      `INSERT INTO users (account, password_hash, credits, token, ip, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(account) DO UPDATE SET
          password_hash = excluded.password_hash,
          credits = excluded.credits,
          token = excluded.token,
+         ip = excluded.ip,
          created_at = excluded.created_at,
          updated_at = excluded.updated_at`
     )
@@ -351,6 +352,7 @@ export function upsertUser(user) {
       user.passwordHash,
       Number(user.credits || 0),
       user.token || "",
+      user.ip || null,
       user.createdAt || new Date().toISOString(),
       user.updatedAt || new Date().toISOString()
     );
