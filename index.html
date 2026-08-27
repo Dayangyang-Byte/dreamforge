@@ -127,4 +127,77 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
+  
+  <!-- DreamForge 提示词库入口按钮 -->
+  <a href="/gpt-image2-prompts.html" target="_blank" class="dreamforge-prompt-btn" title="打开 GPT-Image2 提示词库">
+    <span class="prompt-icon">🎨</span>
+    <span class="prompt-text">提示词库</span>
+  </a>
+  
+  <style>
+  .dreamforge-prompt-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  .dreamforge-prompt-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
+  }
+  
+  .prompt-icon {
+    font-size: 1.2rem;
+  }
+  
+  .prompt-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    .dreamforge-prompt-btn {
+      bottom: 80px;
+      right: 20px;
+      padding: 10px 16px;
+    }
+    
+    .prompt-text {
+      font-size: 0.8rem;
+    }
+  }
+  </style>
+  
+  <script>
+  // 可选：3秒后显示提示动画
+  setTimeout(() => {
+    const btn = document.querySelector('.dreamforge-prompt-btn');
+    if (btn) {
+      btn.style.animation = 'pulse 2s infinite';
+    }
+  }, 3000);
+  
+  // 添加脉冲动画
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
+      50% { box-shadow: 0 4px 30px rgba(99, 102, 241, 0.8); }
+    }
+  `;
+  document.head.appendChild(style);
+  </script>
 </html>
