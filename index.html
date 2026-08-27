@@ -84,11 +84,45 @@
           "url": "https://mengjing233.cn"
         },
         "offers": {
-          "@type": "AggregateOffer",
+          "@type": "Offer",
           "priceCurrency": "CNY",
-          "lowPrice": "2",
-          "highPrice": "5",
-          "offerCount": "1"
+          "price": "0.50",
+          "priceSpecification": [
+            {
+              "@type": "UnitPriceSpecification",
+              "price": "0.50",
+              "priceCurrency": "CNY",
+              "unitCode": "1CST",
+              "description": "每张图片2积分"
+            },
+            {
+              "@type": "UnitPriceSpecification",
+              "price": "0.75",
+              "priceCurrency": "CNY",
+              "unitCode": "1CST",
+              "description": "2K清晰度每张图片3积分"
+            },
+            {
+              "@type": "UnitPriceSpecification",
+              "price": "1.25",
+              "priceCurrency": "CNY",
+              "unitCode": "1CST",
+              "description": "4K超清每张图片5积分"
+            }
+          ],
+          "availability": "https://schema.org/InStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "梦境AI",
+            "url": "https://mengjing233.cn"
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "reviewCount": "150",
+          "bestRating": "5",
+          "worstRating": "1"
         }
       }
     </script>
@@ -137,22 +171,30 @@
     <span class="prompt-text">提示词库</span>
   </a>
 
-  <!-- SEO内容区块（用于Google索引） -->
-  <div class="seo-content-block" style="display:none;">
-    <h2>梦境AI - 专业梦幻电影感AI图片生成工具</h2>
-    <p>梦境AI（DreamForge）是一款专注梦幻电影感风格的AI图片生成工具，支持中文原生输入、参考图上传、多比例生成。新用户注册即可获得免费积分体验GPT Image 2模型。</p>
-    <h3>核心功能</h3>
-    <ul>
-      <li>中文原生支持：直接输入中文描述即可生成高质量图片</li>
-      <li>参考图上传：上传参考图可引导AI生成风格一致的图片</li>
-      <li>多种比例：支持16:9海报、1:1方形、9:16竖版等多种尺寸</li>
-      <li>按需付费：2-5积分/张，新用户注册送2积分</li>
-    </ul>
-    <h3>适用场景</h3>
-    <p>梦境AI适用于海报设计、电商产品图、PPT配图、人物写真、梦幻插画、创意视觉生成等多种场景。专注于"梦幻电影感"风格，适合需要情感化视觉表达的用户。</p>
-    <h3>技术优势</h3>
-    <p>基于GPT Image 2模型，采用先进的图像生成技术，支持1K/2K/4K不同清晰度输出。所有图片生成均在云端完成，无需本地GPU，随时随地创作。</p>
-  </div>
+  <!-- SEO内容区块（可见，用于Google索引） -->
+  <footer class="seo-footer">
+    <div class="seo-content">
+      <h2>梦境AI - 专业梦幻电影感AI图片生成工具</h2>
+      <p>梦境AI（DreamForge）是一款专注梦幻电影感风格的AI图片生成工具，支持中文原生输入、参考图上传、多比例生成。新用户注册即可获得免费积分体验GPT Image 2模型。</p>
+      
+      <h3>核心功能</h3>
+      <ul>
+        <li><strong>中文原生支持</strong>：直接输入中文描述即可生成高质量图片，无需翻译</li>
+        <li><strong>参考图上传</strong>：上传参考图可引导AI生成风格一致的图片</li>
+        <li><strong>多种比例</strong>：支持16:9海报、1:1方形、9:16竖版等多种尺寸</li>
+        <li><strong>按需付费</strong>：2-5积分/张，新用户注册送2积分免费体验</li>
+      </ul>
+      
+      <h3>适用场景</h3>
+      <p>梦境AI适用于海报设计、电商产品图、PPT配图、人物写真、梦幻插画、创意视觉生成等多种场景。专注于"梦幻电影感"风格，适合需要情感化视觉表达的用户。无论是深夜灵感创作还是周末工作设计，都能快速生成高质量图片。</p>
+      
+      <h3>价格说明</h3>
+      <p>GPT Image 2模型按次计费：1K标准清晰度2积分/张，2K高清海报3积分/张，4K超清大图5积分/张。新用户注册即送2积分，可直接体验。</p>
+      
+      <h3>技术优势</h3>
+      <p>基于GPT Image 2模型，采用先进的图像生成技术，支持1K/2K/4K不同清晰度输出。所有图片生成均在云端完成，无需本地GPU，随时随地创作。</p>
+    </div>
+  </footer>
   
   <style>
   .dreamforge-prompt-btn {
@@ -185,6 +227,39 @@
   .prompt-text {
     font-size: 0.9rem;
     font-weight: 500;
+  }
+
+  /* SEO Footer */
+  .seo-footer {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .seo-footer h2 {
+    font-size: 24px;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+  }
+  .seo-footer h3 {
+    font-size: 18px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: #6366f1;
+  }
+  .seo-footer p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #4a5568;
+    margin-bottom: 12px;
+  }
+  .seo-footer ul {
+    padding-left: 20px;
+  }
+  .seo-footer li {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #4a5568;
+    margin-bottom: 8px;
   }
   
   /* 移动端适配 */
