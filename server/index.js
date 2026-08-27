@@ -12,6 +12,7 @@ import {
   adjustUserCredits,
   confirmManualRechargeOrder,
   createRechargeOrder,
+  getDatabase,
   getHistory,
   getGenerationFailures,
   getGenerationRequests,
