@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { AdminApp } from "./Admin.jsx";
 import "./styles.css";
+import "./uiverse-components.css";
+import "./neon-effects.css";
 
 if (window.location.pathname.startsWith("/admin")) {
   createRoot(document.getElementById("root")).render(<AdminApp />);
@@ -1766,8 +1768,8 @@ function App() {
   useEffect(() => {
     document.documentElement.lang = language === "en" ? "en" : "zh-CN";
     document.title = language === "en"
-      ? "DreamForge AI Image Studio"
-      : "DreamForge 梦境 AI 图片生成工具";
+      ? "DreamForge - AI Image Studio"
+      : "梦境AI - 梦幻电影感AI绘画工具";
   }, [language]);
 
   useEffect(() => {
@@ -2446,7 +2448,7 @@ function App() {
                 placeholder={t("promptPlaceholder")}
                 rows={1}
               />
-              <button className="generate-button" type="submit" disabled={loading}>
+              <button className="generate-button holo-effect" type="submit" disabled={loading}>
                 {loading ? <Loader2 className="spin" size={20} /> : null}
                 {loading ? t("generating") : `${t("generateNow")} · ${currentCost === 0 ? t("free") : `${currentCost} ${t("credits")}`}`}
               </button>

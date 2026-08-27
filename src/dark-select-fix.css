@@ -1,0 +1,45 @@
+/* ============================================
+   DARK THEME DROPDOWN / SELECT STYLES
+   ============================================ */
+select {
+  background: rgba(13, 17, 35, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 8px 32px 8px 14px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3e%3cpath d='M6 8L1 3H11L6 8Z' fill='rgba(255,255,255,0.6)'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+select:hover {
+  border-color: rgba(158, 232, 255, 0.35) !important;
+  background: rgba(13, 17, 35, 0.95) !important;
+}
+
+select:focus {
+  outline: none !important;
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 0 3px rgba(99, 220, 255, 0.15) !important;
+}
+
+select option {
+  background: rgba(13, 17, 35, 0.98) !important;
+  color: #ffffff !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+}
+
+select option:hover {
+  background: rgba(112, 77, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+select option:checked {
+  background: rgba(112, 77, 255, 0.35) !important;
+  color: #ffffff !important;
+}

@@ -1,0 +1,537 @@
+/**
+ * Uiverse-inspired UI Components for DreamForge
+ * Collection of premium button and card styles
+ * Compatible with existing DreamForge dark theme
+ */
+
+/* ============================================
+   BUTTON COMPONENTS
+   ============================================ */
+
+/* 1. Neon Glow Button - Primary Action */
+.uiverse-neon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cyan);
+  background: transparent;
+  border: 2px solid var(--cyan);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 10px rgba(99, 220, 255, 0.3),
+    inset 0 0 10px rgba(99, 220, 255, 0.1);
+}
+
+.uiverse-neon-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 220, 255, 0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.uiverse-neon-btn:hover::before {
+  left: 100%;
+}
+
+.uiverse-neon-btn:hover {
+  color: #fff;
+  background: rgba(99, 220, 255, 0.15);
+  box-shadow: 
+    0 0 20px rgba(99, 220, 255, 0.6),
+    0 0 40px rgba(99, 220, 255, 0.3),
+    inset 0 0 20px rgba(99, 220, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* 2. Gradient Border Button - Premium */
+.uiverse-gradient-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 36px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 32px rgba(139, 108, 255, 0.35),
+    0 2px 8px rgba(99, 220, 255, 0.2);
+}
+
+.uiverse-gradient-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.uiverse-gradient-btn:hover::after {
+  opacity: 1;
+}
+
+.uiverse-gradient-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 12px 40px rgba(139, 108, 255, 0.5),
+    0 4px 12px rgba(99, 220, 255, 0.3);
+}
+
+.uiverse-gradient-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* 3. Glowing Ring Button - Loading/Generate */
+.uiverse-ring-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ink-820);
+  border: 2px solid var(--cyan);
+  color: var(--cyan);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.uiverse-ring-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--cyan), var(--violet), transparent);
+  animation: ring-rotate 2s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.uiverse-ring-btn:hover::before {
+  opacity: 1;
+}
+
+.uiverse-ring-btn svg {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.uiverse-ring-btn:hover svg {
+  transform: scale(1.1);
+}
+
+@keyframes ring-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* 4. Holographic Button - Feature Highlight */
+.uiverse-holo-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 128, 0.6) 0%,
+    rgba(139, 108, 255, 0.6) 25%,
+    rgba(99, 220, 255, 0.6) 50%,
+    rgba(255, 207, 102, 0.6) 75%,
+    rgba(255, 0, 128, 0.6) 100%
+  );
+  background-size: 300% 300%;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  animation: holo-shift 4s ease infinite;
+  box-shadow: 
+    0 4px 20px rgba(139, 108, 255, 0.3),
+    0 2px 8px rgba(99, 220, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.uiverse-holo-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.3) 0%,
+    transparent 50%,
+    rgba(0,0,0,0.2) 100%
+  );
+}
+
+.uiverse-holo-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 30px rgba(139, 108, 255, 0.5),
+    0 4px 12px rgba(99, 220, 255, 0.3);
+}
+
+@keyframes holo-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================
+   CARD COMPONENTS
+   ============================================ */
+
+/* 1. Glassmorphism Card - Feature Display */
+.uiverse-glass-card {
+  position: relative;
+  padding: 28px;
+  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uiverse-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+}
+
+.uiverse-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 220, 255, 0.4);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(99, 220, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* 2. Neon Border Card - Highlight */
+.uiverse-neon-card {
+  position: relative;
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--panel-strong);
+  border: 1px solid rgba(99, 220, 255, 0.2);
+  box-shadow: 0 0 20px rgba(99, 220, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.uiverse-neon-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--cyan),
+    var(--violet),
+    var(--rose)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.uiverse-neon-card:hover::before {
+  opacity: 1;
+}
+
+.uiverse-neon-card:hover {
+  border-color: transparent;
+  box-shadow: 
+    0 0 30px rgba(99, 220, 255, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 3. Floating Shadow Card - Featured Content */
+.uiverse-float-card {
+  position: relative;
+  padding: 32px;
+  border-radius: 28px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uiverse-float-card::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 10%;
+  right: 10%;
+  height: 20px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.3) 0%,
+    transparent 70%
+  );
+  filter: blur(10px);
+  transition: all 0.4s ease;
+}
+
+.uiverse-float-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(139, 108, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.uiverse-float-card:hover::after {
+  bottom: -15px;
+  left: 5%;
+  right: 5%;
+  height: 30px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.4) 0%,
+    transparent 70%
+  );
+}
+
+/* ============================================
+   LOADING ANIMATIONS
+   ============================================ */
+
+/* 1. Spinner with Glow */
+.uiverse-spinner {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, var(--cyan));
+  animation: spinner-rotate 1s linear infinite;
+  box-shadow: 
+    0 0 20px rgba(99, 220, 255, 0.5),
+    inset 0 0 20px rgba(99, 220, 255, 0.2);
+}
+
+.uiverse-spinner::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--ink-950);
+}
+
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* 2. Pulsing Ring */
+.uiverse-pulse-ring {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uiverse-pulse-ring::before,
+.uiverse-pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--violet);
+  animation: pulse-ring-expand 1.5s ease-out infinite;
+}
+
+.uiverse-pulse-ring::after {
+  animation-delay: 0.5s;
+}
+
+@keyframes pulse-ring-expand {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   INPUT COMPONENTS
+   ============================================ */
+
+/* Floating Label Input */
+.uiverse-floating-input {
+  position: relative;
+  width: 100%;
+}
+
+.uiverse-floating-input input,
+.uiverse-floating-input textarea {
+  width: 100%;
+  padding: 16px 16px 8px;
+  font-size: 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.uiverse-floating-input label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.uiverse-floating-input input:focus ~ label,
+.uiverse-floating-input input:not(:placeholder-shown) ~ label,
+.uiverse-floating-input textarea:focus ~ label,
+.uiverse-floating-input textarea:not(:placeholder-shown) ~ label {
+  top: 12px;
+  transform: translateY(0);
+  font-size: 12px;
+  color: var(--cyan);
+}
+
+.uiverse-floating-input input:focus,
+.uiverse-floating-input textarea:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(99, 220, 255, 0.2);
+  background: rgba(99, 220, 255, 0.05);
+}
+
+/* ============================================
+   TOGGLE SWITCH
+   ============================================ */
+
+.uiverse-toggle {
+  position: relative;
+  width: 56px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.uiverse-toggle::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.uiverse-toggle.active {
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+}
+
+.uiverse-toggle.active::before {
+  transform: translateX(28px);
+  background: #fff;
+}
+
+/* ============================================
+   BADGE / TAG
+   ============================================ */
+
+.uiverse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan);
+  background: rgba(99, 220, 255, 0.1);
+  border: 1px solid rgba(99, 220, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(99, 220, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.uiverse-badge:hover {
+  background: rgba(99, 220, 255, 0.2);
+  box-shadow: 0 0 20px rgba(99, 220, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.uiverse-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uiverse-gap-sm { gap: 8px; }
+.uiverse-gap-md { gap: 16px; }
+.uiverse-gap-lg { gap: 24px; }

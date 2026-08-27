@@ -726,11 +726,41 @@ button {
   box-shadow: 0 14px 36px rgba(75, 99, 255, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.24);
   font-size: 17px;
   font-weight: 950;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.generate-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.generate-button:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 .generate-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 42px rgba(75, 99, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 18px 42px rgba(75, 99, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0 30px rgba(124, 92, 255, 0.3);
+}
+
+.generate-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .generate-button:disabled {
@@ -4067,4 +4097,124 @@ body {
     padding: 6px;
     border-radius: 16px;
   }
+}
+
+/* ============================================
+   DARK THEME DROPDOWN / SELECT STYLES
+   ============================================ */
+select {
+  background: rgba(13, 17, 35, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 8px 32px 8px 14px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3e%3cpath d='M6 8L1 3H11L6 8Z' fill='rgba(255,255,255,0.6)'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+select:hover {
+  border-color: rgba(158, 232, 255, 0.35) !important;
+  background: rgba(13, 17, 35, 0.95) !important;
+}
+
+select:focus {
+  outline: none !important;
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 0 3px rgba(99, 220, 255, 0.15) !important;
+}
+
+select option {
+  background: rgba(13, 17, 35, 0.98) !important;
+  color: #ffffff !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+}
+
+select option:hover {
+  background: rgba(112, 77, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+select option:checked {
+  background: rgba(112, 77, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   HOLOGRAPHIC BUTTON EFFECT
+   ============================================ */
+.generate-button.holo-effect {
+  position: relative;
+  overflow: hidden;
+  background: transparent !important;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: none;
+}
+
+.generate-button.holo-effect::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    #ff0080,
+    #ff00ff,
+    #8a2be2,
+    #00bfff,
+    #00ffcc,
+    #ffcc00,
+    #ff0080
+  );
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: 17px;
+  animation: holo-shift 3s ease infinite;
+}
+
+.generate-button.holo-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.generate-button.holo-effect:hover::after {
+  left: 100%;
+}
+
+.generate-button.holo-effect:not(:disabled):hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 0 30px rgba(255, 0, 128, 0.5),
+    0 0 60px rgba(0, 191, 255, 0.3),
+    0 0 90px rgba(138, 43, 226, 0.2);
+}
+
+.generate-button.holo-effect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes holo-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

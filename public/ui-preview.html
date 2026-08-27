@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamForge UI 组件预览</title>
+  <style>
+    :root {
+      --ink-950: #02030a;
+      --ink-900: #050711;
+      --ink-820: #0b1022;
+      --panel: rgba(13, 17, 35, 0.68);
+      --panel-strong: rgba(15, 19, 40, 0.88);
+      --line-soft: rgba(255, 255, 255, 0.12);
+      --line-bright: rgba(158, 232, 255, 0.34);
+      --cyan: #63dcff;
+      --violet: #8b6cff;
+      --rose: #ffc6f4;
+      --gold: #ffcf66;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+      background: var(--ink-950);
+      color: #f7f7ff;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 48px;
+      font-size: 16px;
+    }
+    
+    .section {
+      margin-bottom: 64px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      color: var(--cyan);
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(180deg, var(--cyan), var(--violet));
+      border-radius: 2px;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    
+    .card {
+      padding: 24px;
+      background: var(--panel);
+      border-radius: 16px;
+      border: 1px solid var(--line-soft);
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      border-color: var(--line-bright);
+      transform: translateY(-2px);
+    }
+    
+    .card-label {
+      margin-bottom: 16px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+    }
+    
+    /* ========== BUTTONS ========== */
+    
+    /* 1. Neon Glow Button */
+    .neon-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cyan);
+      background: transparent;
+      border: 2px solid var(--cyan);
+      border-radius: 12px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 
+        0 0 10px rgba(99, 220, 255, 0.3),
+        inset 0 0 10px rgba(99, 220, 255, 0.1);
+    }
+    
+    .neon-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 220, 255, 0.4), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .neon-btn:hover::before {
+      left: 100%;
+    }
+    
+    .neon-btn:hover {
+      color: #fff;
+      background: rgba(99, 220, 255, 0.15);
+      box-shadow: 
+        0 0 20px rgba(99, 220, 255, 0.6),
+        0 0 40px rgba(99, 220, 255, 0.3),
+        inset 0 0 20px rgba(99, 220, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    /* 2. Gradient Primary Button */
+    .gradient-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 36px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 8px 32px rgba(139, 108, 255, 0.35),
+        0 2px 8px rgba(99, 220, 255, 0.2);
+    }
+    
+    .gradient-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .gradient-btn:hover::after {
+      opacity: 1;
+    }
+    
+    .gradient-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 12px 40px rgba(139, 108, 255, 0.5),
+        0 4px 12px rgba(99, 220, 255, 0.3);
+    }
+    
+    /* 3. Holographic Button */
+    .holo-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 36px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, #ff0080, #8a2be2, #00bfff, #00ffcc);
+      background-size: 400% 400%;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      overflow: hidden;
+      animation: holo-shift 3s ease infinite;
+      box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.4),
+        0 2px 8px rgba(0, 191, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .holo-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+      );
+      transition: left 0.6s ease;
+    }
+    
+    .holo-btn:hover::before {
+      left: 100%;
+    }
+    
+    .holo-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 
+        0 0 30px rgba(255, 0, 128, 0.5),
+        0 0 60px rgba(0, 191, 255, 0.3),
+        0 0 90px rgba(138, 43, 226, 0.2);
+    }
+    
+    @keyframes holo-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    /* 4. Outline Button */
+    .outline-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .outline-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 20px rgba(99, 220, 255, 0.2);
+    }
+    
+    /* 5. Ghost Button */
+    .ghost-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .ghost-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    
+    /* ========== CARDS ========== */
+    
+    /* Glass Card */
+    .glass-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover {
+      border-color: rgba(255,255,255,0.25);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      transform: translateY(-4px);
+    }
+    
+    /* Neon Card */
+    .neon-card {
+      position: relative;
+      background: var(--panel-strong);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid transparent;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .neon-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet), var(--rose));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .neon-card:hover::before {
+      opacity: 1;
+    }
+    
+    .neon-card:hover {
+      box-shadow: 
+        0 0 30px rgba(99, 220, 255, 0.3),
+        0 0 60px rgba(139, 108, 255, 0.2);
+      transform: translateY(-4px);
+    }
+    
+    /* Float Card */
+    .float-card {
+      background: var(--panel);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid var(--line-soft);
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .float-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 
+        0 32px 80px rgba(0,0,0,0.6),
+        0 0 40px rgba(99, 220, 255, 0.15);
+    }
+    
+    /* ========== INPUTS ========== */
+    
+    .floating-input {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    
+    .floating-input input,
+    .floating-input textarea {
+      width: 100%;
+      padding: 16px 12px 8px;
+      font-size: 16px;
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .floating-input label {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    
+    .floating-input input:focus,
+    .floating-input textarea:focus,
+    .floating-input input:not(:placeholder-shown),
+    .floating-input textarea:not(:placeholder-shown) {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(99, 220, 255, 0.2);
+      background: rgba(99, 220, 255, 0.05);
+    }
+    
+    .floating-input input:focus ~ label,
+    .floating-input textarea:focus ~ label,
+    .floating-input input:not(:placeholder-shown) ~ label,
+    .floating-input textarea:not(:placeholder-shown) ~ label {
+      top: 8px;
+      transform: translateY(0);
+      font-size: 12px;
+      color: var(--cyan);
+    }
+    
+    /* ========== TOGGLES ========== */
+    
+    .toggle {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .toggle::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .toggle.active {
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+    }
+    
+    .toggle.active::before {
+      transform: translateX(28px);
+      background: #fff;
+    }
+    
+    /* ========== BADGES ========== */
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(99, 220, 255, 0.1);
+      border: 1px solid rgba(99, 220, 255, 0.3);
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(99, 220, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .badge:hover {
+      background: rgba(99, 220, 255, 0.2);
+      box-shadow: 0 0 20px rgba(99, 220, 255, 0.3);
+    }
+    
+    .badge.violet {
+      color: var(--violet);
+      background: rgba(139, 108, 255, 0.1);
+      border-color: rgba(139, 108, 255, 0.3);
+    }
+    
+    .badge.rose {
+      color: var(--rose);
+      background: rgba(255, 198, 244, 0.1);
+      border-color: rgba(255, 198, 244, 0.3);
+    }
+    
+    /* ========== LOADERS ========== */
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .pulse-ring {
+      position: relative;
+      width: 40px;
+      height: 40px;
+    }
+    
+    .pulse-ring::before,
+    .pulse-ring::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid var(--cyan);
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+    
+    .pulse-ring::after {
+      animation-delay: 0.5s;
+    }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    
+    /* ========== PROGRESS ========== */
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--violet), var(--cyan));
+      border-radius: 4px;
+      animation: progress 2s ease-in-out infinite;
+    }
+    
+    @keyframes progress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    
+    /* ========== TOOLTIP ========== */
+    
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      padding: 6px 12px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line-bright);
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    
+    .tooltip:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+    
+    /* ========== SELECTION ========== */
+    
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      color: #fff;
+      background: rgba(13, 17, 35, 0.85);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2363dcff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: all 0.3s ease;
+    }
+    
+    select:hover,
+    select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(99, 220, 255, 0.2);
+    }
+    
+    select option {
+      background: var(--ink-900);
+      color: #fff;
+    }
+    
+    /* ========== DEMO LAYOUT ========== */
+    
+    .demo-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    
+    .demo-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    
+    /* ========== FOOTER ========== */
+    
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+      border-top: 1px solid var(--line-soft);
+      margin-top: 40px;
+    }
+    
+    .footer a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 DreamForge UI 组件预览</h1>
+    <p class="subtitle">选择适合你网站的组件 | 点击复选框选择</p>
+    
+    <!-- BUTTONS -->
+    <section class="section">
+      <h2 class="section-title">按钮组件</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">🌟 霓虹发光按钮 - 用于次要操作</div>
+          <div class="demo-row">
+            <button class="neon-btn">霓虹按钮</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">🚀 渐变主按钮 - 主要操作</div>
+          <div class="demo-row">
+            <button class="gradient-btn">立即生成</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">✨ 全息特效按钮 - 特色功能</div>
+          <div class="demo-row">
+            <button class="holo-btn">全息特效</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">⚪ 描边按钮 - 次要操作</div>
+          <div class="demo-row">
+            <button class="outline-btn">了解更多</button>
+            <button class="ghost-btn">取消</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- CARDS -->
+    <section class="section">
+      <h2 class="section-title">卡片效果</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">🪟 玻璃拟态卡片</div>
+          <div class="glass-card">
+            <h3 style="color: #fff; margin-bottom: 8px;">Glass Card</h3>
+            <p style="color: rgba(255,255,255,0.6); font-size: 14px;">半透明背景 + 模糊效果，现代感十足</p>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">💫 霓虹边框卡片</div>
+          <div class="neon-card">
+            <h3 style="color: #fff; margin-bottom: 8px;">Neon Card</h3>
+            <p style="color: rgba(255,255,255,0.6); font-size: 14px;">渐变霓虹边框，悬停时发光增强</p>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">☁️ 悬浮深度卡片</div>
+          <div class="float-card">
+            <h3 style="color: #fff; margin-bottom: 8px;">Float Card</h3>
+            <p style="color: rgba(255,255,255,0.6); font-size: 14px;">强烈阴影效果，增加层次感</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- INPUTS -->
+    <section class="section">
+      <h2 class="section-title">输入框组件</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">📝 浮动标签输入框</div>
+          <div class="floating-input">
+            <input type="text" id="demo-input" placeholder=" " />
+            <label for="demo-input">输入提示词...</label>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">📋 下拉选择框</div>
+          <select>
+            <option>选择比例 16:9</option>
+            <option>选择比例 4:3</option>
+            <option>选择比例 1:1</option>
+            <option>选择比例 9:16</option>
+          </select>
+        </div>
+      </div>
+    </section>
+    
+    <!-- CONTROLS -->
+    <section class="section">
+      <h2 class="section-title">控制组件</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">🔘 开关切换</div>
+          <div class="demo-row">
+            <div>
+              <div class="toggle" onclick="this.classList.toggle('active')"></div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px; text-align: center;">关闭</div>
+            </div>
+            <div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px; text-align: center;">开启</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">🏷️ 徽章标签</div>
+          <div class="demo-row">
+            <span class="badge">热门</span>
+            <span class="badge violet">NEW</span>
+            <span class="badge rose">Pro</span>
+            <span class="badge">Beta</span>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">⏳ 加载动画</div>
+          <div class="demo-row">
+            <div class="spinner"></div>
+            <div class="pulse-ring"></div>
+            <div style="width: 100%; margin-top: 16px;">
+              <div class="progress-bar">
+                <div class="progress-fill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">💬 工具提示</div>
+          <div class="demo-row">
+            <div class="tooltip" data-tooltip="这是提示信息">
+              <button class="outline-btn">悬停查看</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- COMBINED EXAMPLE -->
+    <section class="section">
+      <h2 class="section-title">组合示例 - 生成面板</h2>
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="float-card">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--violet), var(--cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎨</div>
+              <div>
+                <h3 style="color: #fff; font-size: 18px;">梦幻生成器</h3>
+                <p style="color: rgba(255,255,255,0.5); font-size: 13px;">AI驱动的梦幻场景生成</p>
+              </div>
+            </div>
+            <span class="badge">免费</span>
+          </div>
+          
+          <div class="floating-input" style="margin-bottom: 16px;">
+            <input type="text" placeholder=" " />
+            <label>输入你的梦幻描述...</label>
+          </div>
+          
+          <select style="margin-bottom: 16px;">
+            <option>选择比例 16:9 (横图)</option>
+            <option>选择比例 4:3 (标准)</option>
+            <option>选择比例 1:1 (方形)</option>
+            <option>选择比例 9:16 (竖图)</option>
+          </select>
+          
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button class="gradient-btn" style="flex: 1; justify-content: center;">
+              ✨ 立即生成
+            </button>
+            <button class="outline-btn">
+              历史记录
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="footer">
+      <p>DreamForge UI 组件预览 | 共 15+ 种组件可选</p>
+    </div>
+  </div>
+  
+  <script>
+    // Toggle interaction
+    document.querySelectorAll('.toggle').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('active');
+      });
+    });
+    
+    // Floating label fix for Safari
+    document.querySelectorAll('.floating-input input, .floating-input textarea').forEach(input => {
+      input.addEventListener('blur', () => {
+        if (input.value) {
+          input.classList.add('has-value');
+        } else {
+          input.classList.remove('has-value');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

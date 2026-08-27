@@ -1,0 +1,88 @@
+/* ============================================
+   NEON BORDER EFFECTS
+   Apply to model pills, quality pills, upload tile
+   ============================================ */
+
+/* Animated neon glow for active states */
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 8px rgba(111, 232, 255, 0.5),
+      0 0 16px rgba(111, 232, 255, 0.3),
+      0 0 24px rgba(111, 232, 255, 0.2),
+      inset 0 0 8px rgba(111, 232, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 12px rgba(111, 232, 255, 0.7),
+      0 0 24px rgba(111, 232, 255, 0.5),
+      0 0 36px rgba(111, 232, 255, 0.3),
+      inset 0 0 12px rgba(111, 232, 255, 0.2);
+  }
+}
+
+/* Neon glow for model pill active state */
+.model-pill.active {
+  animation: neon-pulse 2s ease-in-out infinite;
+  border-color: rgba(111, 232, 255, 0.8) !important;
+}
+
+/* Neon glow for quality pill active state */
+.quality-pill.active {
+  animation: neon-pulse 2s ease-in-out infinite;
+  border-color: rgba(111, 232, 255, 0.8) !important;
+}
+
+/* Upload tile neon effect */
+.upload-tile:hover {
+  border-color: rgba(111, 232, 255, 0.6) !important;
+  box-shadow: 
+    0 0 12px rgba(111, 232, 255, 0.4),
+    inset 0 0 12px rgba(111, 232, 255, 0.1);
+}
+
+/* Reference thumbnail neon border */
+.reference-thumb {
+  position: relative;
+  overflow: hidden;
+}
+
+.reference-thumb::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(111, 232, 255, 0.6),
+    rgba(155, 124, 255, 0.6),
+    rgba(255, 145, 220, 0.6)
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.reference-thumb:hover::before {
+  opacity: 1;
+}
+
+/* Template button neon glow */
+.template-trigger:hover {
+  border-color: rgba(111, 232, 255, 0.6) !important;
+  box-shadow: 
+    0 0 20px rgba(111, 232, 255, 0.3),
+    inset 0 0 20px rgba(111, 232, 255, 0.1);
+}
+
+.template-option:hover {
+  border-color: rgba(111, 232, 255, 0.5) !important;
+  box-shadow: 
+    0 0 12px rgba(111, 232, 255, 0.2),
+    inset 0 0 12px rgba(111, 232, 255, 0.05);
+}

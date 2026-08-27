@@ -1,80 +1,145 @@
-# DreamForge 推广进度总结
+# DreamForge 推广进度报告 - 2026-08-26
 
-> 更新时间：2026-08-21 21:10
-
----
-
-## ✅ 已完成
-
-### 1. Future Tools
-- **状态**: ✅ 已提交成功
-- **链接**: https://futuretools.io/submit-a-tool
-- **确认**: 已收到"工具已提交"确认页
-
-### 2. Product Hunt
-- **状态**: 🔄 新手引导已完成，待提交
-- **问题**: 提交页面返回 404 错误
-- **原因**: 可能需要等待审核期或页面暂时不可用
+> 更新时间：2026-08-26 20:50
+> 下次更新：发布完AlternativeTo后
 
 ---
 
-## ❌ 跳过
+## ✅ 今日已完成
 
-### 3. Futurepedia
-- **原因**: 付费平台
-- **价格**: $497 Verified Listing
-- **Basic Listing**: $247 已售罄
-
-### 4. TheresAnAIForThat
-- **原因**: 中国IP被阻止
-
----
-
-## 📊 当前推广渠道
-
-| 平台 | 状态 | 时间 |
+| 渠道 | 状态 | 内容 |
 |------|------|------|
-| Future Tools | ✅ 已提交 | 09:15 |
-| Product Hunt | 🔄 待提交 | 需手动完成 |
-| Futurepedia | ❌ 跳过 | 付费 |
-| TheresAnAIForThat | ❌ 跳过 | IP阻止 |
-| Twitter | ✅ 已发2条 | 18:35 |
-| 即刻 | ✅ 已发2条 | 18:40 |
-| 知乎 | ✅ 已发6条 | 08:28 |
-| Reddit | ✅ 已发1条 | - |
+| **知乎** | ✅ 已完成 | 4个回答模板已发布 |
+| **微博** | ✅ 已完成 | 5条文案已发布 |
+| **Reddit第1条** | ✅ 已完成 | r/aiArt发布（1 upvote） |
+| **Reddit第2条** | ✅ 已完成 | r/midjourney发布 |
+| **Product Hunt** | ✅ 已提交 | 审核中 |
+| **品牌统一** | ✅ 已完成 | 官网SEO全部改为"梦境AI"主品牌 |
+| **GEO策略文档** | ✅ 已完成 | 整合两篇核心文章，创建综合策略 |
 
 ---
 
-## 🎯 下一步行动
+## ⏳ 进行中
 
-### 立即做
-1. **手动提交 Product Hunt**
-   - 打开 https://www.producthunt.com/submit
-   - 填写 DreamForge 信息
-   - 上传封面图
-   - 点击提交
-
-2. **如果还是404**
-   - 等明天早上8点再试
-   - 继续其他渠道推广
-
-### 明天做
-3. **查看 GA 数据变化**
-4. **继续内容推广**
+| 渠道 | 状态 | 备注 |
+|------|------|------|
+| **AlternativeTo** | ⏳ 等待手动提交 | 页面有Cloudflare验证，需用户完成 |
+| **Reddit第3条** | ⏳ 待发布 | 需等24小时后（明天发） |
 
 ---
 
-## 📝 Product Hunt 提交信息
+## 📋 待执行
+
+| 渠道 | 优先级 | 备注 |
+|------|--------|------|
+| BetaList | P2 | 补充曝光 |
+| 更多Reddit回复 | P2 | 持续参与社区 |
+
+---
+
+## 🎯 重要发现：GEO黑箱研究
+
+**来源**: X博主 Suganthan Mohanadasan 的实测研究
+
+### AI推荐品牌的四站流程
 
 ```
-Product Name: DreamForge
-Tagline: Chinese-native AI image generation platform
-Description: Open-source AI image generation platform optimized for Chinese users. Create stunning dreamy cinematic images with native Chinese prompt support.
-Website: https://mengjing233.cn
-GitHub: https://github.com/Dayangyang-Byte/dreamforge
-Category: Art & Design
+第一站: AI"读到"你 → 官网必须可被爬虫读取（静态HTML）
+    ↓
+第二站: AI"记住"你 → 训练数据积累，长期收益
+    ↓
+第三站: AI"验证"你 → 第三方信源（Reddit等）替你说话
+    ↓
+第四站: AI"推荐"你 → 出现在答案中
 ```
+
+### 关键洞察
+
+1. **动态内容AI读不到**
+   - JavaScript生成的价格表、参数表 → AI看不到
+   - 解决方案：改为静态HTML，直接写在源码里
+
+2. **域名折叠机制**
+   - 同一网站20个单薄页面 = AI眼里只算1个
+   - 解决方案：合并内容，做厚3-5个核心页面
+
+3. **AI记忆固化**
+   - 越被反复确认的答案越容易被沿用
+   - 竞品先被写进记忆 → 后来想改写难度剧增
+   - 时间窗口：等下一次模型训练
+
+4. **抓取≠引用**
+   - YouTube被抓取200+次，引用0次（只有标题，没有正文）
+   - Reddit全文文字 → 高引用率
+   - 解决方案：视频配完整文字稿
+
+5. **事实vs评价分工**
+   - 价格、参数 → 引用官网
+   - "哪家好、值不值" → 引用第三方（不能自我吹嘘）
 
 ---
 
-*更新时间：2026-08-21 21:10*
+## 💡 对我们DreamForge的具体启示
+
+### 立即行动（本周）
+
+| 检查项 | 状态 |
+|--------|------|
+| 官网价格表是静态HTML还是JS动态生成？ | ⏳ 待查 |
+| 参数表是图片/PDF还是文字？ | ⏳ 待查 |
+| robots.txt是否挡AI爬虫？ | ⏳ 待查 |
+| 产品名"梦境AI"在所有平台一致？ | ✅ 已统一 |
+| 知乎、Reddit、微博信息口径一致？ | ✅ 已统一 |
+
+### 中期策略（本月）
+
+- 收集10个真实用户案例（含提示词+生成图）
+- 围绕3-5个核心问题做厚内容
+- 持续Reddit参与，建立真实口碑
+- 等待模型训练收录（GEO收益延迟）
+
+---
+
+## 📊 当前流量数据
+
+| 指标 | 数值 | 来源 |
+|------|------|------|
+| 7天UV | 51 | GA |
+| GitHub Stars | 0 | GitHub |
+| Product Hunt | 审核中 | PH后台 |
+| AlternativeTo | 待提交 | - |
+| Reddit发帖 | 2条 | - |
+| 知乎回答 | 4条 | - |
+| 微博发帖 | 5条 | - |
+
+---
+
+## 📝 下一步行动
+
+### 今天
+- [ ] 完成AlternativeTo提交（需手动完成Cloudflare验证）
+- [ ] 等待Reddit第3条24小时后发布
+
+### 明天
+- [ ] 发布Reddit第3条（r/StableDiffusion）
+- [ ] 检查官网技术细节（价格表、参数表是否静态HTML）
+
+### 本周
+- [ ] 收集5个真实用户案例
+- [ ] 建立GEO监测表格，每周追踪AI推荐变化
+- [ ] 继续Reddit社区参与
+
+---
+
+## 🎯 预期效果
+
+参考工业制造案例（90%企业未布局GEO）：
+- AI推荐率提升：50%（从"不知道"到"知道"）
+- 错误信息减少：80%
+- 场景化关键词覆盖：从0到10个核心场景
+- 真实案例数：从0到20个
+
+---
+
+*创建时间: 2026-08-26*
+*维护人: Agnes*
