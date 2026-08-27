@@ -202,20 +202,63 @@ app.post("/api/auth/register", async (req, res) => {
     const users = await loadUsers();
     if (users.accounts[account]) throw new Error("账号已存在，请直接登录");
 
+    // 防薅羊毛：同一IP最多注册3个账号
+    const ip = getClientIp(req);
+    const database = getDatabase();
+    const recentRegistrations = database
+      .prepare(
+        `SELECT account, created_at FROM users
+         WHERE ip = ? AND created_at > datetime('now', '-1 hour')
+         ORDER BY created_at DESC LIMIT 10`
+      )
+      .all(ip);
+
+    // 检查同IP过去1小时内是否已有注册记录
+    const sameIpCount = database
+      .prepare(
+        `SELECT COUNT(*) AS cnt FROM users WHERE ip = ?`
+      )
+      .get(ip);
+
+    if (sameIpCount.cnt >= 3) {
+      throw new Error("该IP地址已注册超过3个账号，请稍后再试或联系客服");
+    }
+
+    const now = new Date().toISOString();
     const token = createToken();
     users.accounts[account] = {
       account,
       passwordHash: hashPassword(password),
-      credits: 0,
+      credits: 2, // 新用户注册赠送2积分
       token,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      creditLogs: []
+      createdAt: now,
+      updatedAt: now,
+      creditLogs: [],
+      ip: ip
     };
 
     await saveUsers(users);
+
+    // 记录赠送积分账本
+    insertCreditLog(account, {
+      type: "welcome",
+      credits: 2,
+      cost: 0,
+      code: "new-user-welcome",
+      model: "",
+      quality: "",
+      prompt: "新用户注册赠送积分",
+      ip: ip,
+      createdAt: now
+    });
+
     req.auditAccount = account;
-    res.json({ token, user: publicUser(users.accounts[account]) });
+    req.auditDetail = { ip, sameIpCount: sameIpCount.cnt + 1 };
+    res.json({
+      token,
+      user: publicUser(users.accounts[account]),
+      welcomeCredits: 2
+    });
   } catch (error) {
     res.status(400).json({ error: error.message || "注册失败" });
   }

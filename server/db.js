@@ -15,6 +15,7 @@ export function initDatabase(dbPath) {
       password_hash TEXT NOT NULL,
       credits INTEGER NOT NULL DEFAULT 0,
       token TEXT,
+      ip TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
@@ -29,6 +30,7 @@ export function initDatabase(dbPath) {
       model TEXT,
       quality TEXT,
       prompt TEXT,
+      ip TEXT,
       created_at TEXT NOT NULL
     );
 
@@ -211,6 +213,7 @@ export function initDatabase(dbPath) {
   ensureImageAssetColumns();
   ensureGenerationRequestColumns();
   ensureAnnouncementColumns();
+  ensureCreditLogsColumns();
   return db;
 }
 
@@ -263,6 +266,25 @@ function ensureAnnouncementColumns() {
     if (!columns.has(name)) {
       database.exec(`ALTER TABLE announcements ADD COLUMN ${name} ${type}`);
     }
+  }
+}
+
+function ensureCreditLogsColumns() {
+  const database = getDatabase();
+  // 确保 credit_logs 表有 ip 字段
+  const columns = new Set(database.prepare("PRAGMA table_info(credit_logs)").all().map((row) => row.name));
+  const additions = [["ip", "TEXT"]];
+
+  for (const [name, type] of additions) {
+    if (!columns.has(name)) {
+      database.exec(`ALTER TABLE credit_logs ADD COLUMN ${name} ${type}`);
+    }
+  }
+
+  // 确保 users 表有 ip 字段
+  const userColumns = new Set(database.prepare("PRAGMA table_info(users)").all().map((row) => row.name));
+  if (!userColumns.has("ip")) {
+    database.exec(`ALTER TABLE users ADD COLUMN ip TEXT`);
   }
 }
 
@@ -337,8 +359,8 @@ export function upsertUser(user) {
 export function insertCreditLog(account, log) {
   getDatabase()
     .prepare(
-      `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, ip, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       account,
@@ -349,6 +371,7 @@ export function insertCreditLog(account, log) {
       log.model || "",
       log.quality || "",
       log.prompt || "",
+      log.ip || "",
       log.createdAt || new Date().toISOString()
     );
 }
@@ -389,14 +412,15 @@ export function setUserCreditsWithManualLog({ account, targetCredits, note = "",
       .run(target, now, account);
     database
       .prepare(
-        `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, created_at)
-         VALUES (?, 'manual', ?, NULL, ?, 'admin-adjustment', 'set-balance', ?, ?)`
+        `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, ip, created_at)
+         VALUES (?, 'manual', ?, NULL, ?, 'admin-adjustment', 'set-balance', ?, ?, ?)`
       )
       .run(
         account,
         delta,
         `admin:${String(admin || "admin").slice(0, 80)}`,
         `目标余额 ${target}，原余额 ${previousCredits}。${String(note || "").trim()}`,
+        "",
         now
       );
 
@@ -819,8 +843,8 @@ export function settleGenerationSuccess({ job, account, cost, log, requestId, co
 
     database
       .prepare(
-        `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, ip, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .run(
         account,
@@ -831,6 +855,7 @@ export function settleGenerationSuccess({ job, account, cost, log, requestId, co
         log.model || "",
         log.quality || "",
         log.prompt || "",
+        log.ip || "",
         log.createdAt || now
       );
 
@@ -1108,8 +1133,8 @@ export function confirmManualRechargeOrder({ id = "", credits = 0, note = "", ad
       .run(finalCredits, now, order.account);
     database
       .prepare(
-        `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, ip, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .run(
         order.account,
@@ -1120,6 +1145,7 @@ export function confirmManualRechargeOrder({ id = "", credits = 0, note = "", ad
         order.provider || "wechat_manual",
         "",
         `微信人工充值 ${formatAmountYuan(order.amountCents)} 元，确认 ${finalCredits} 积分${note ? `；${String(note).slice(0, 120)}` : ""}`,
+        "",
         now
       );
 
@@ -1162,8 +1188,8 @@ export function settleRechargeOrderPaid({ id = "", outTradeNo = "", transactionI
         .run(Number(order.credits || 0), now, order.account);
       database
         .prepare(
-          `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO credit_logs (account, type, credits, cost, code, model, quality, prompt, ip, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .run(
           order.account,
@@ -1174,6 +1200,7 @@ export function settleRechargeOrderPaid({ id = "", outTradeNo = "", transactionI
           "wechat",
           "",
           `微信充值 ${formatAmountYuan(order.amountCents)} 元`,
+          "",
           now
         );
     }
@@ -1414,7 +1441,9 @@ export function getCreditLedgerAudit({ limit = 50 } = {}) {
         COALESCE(SUM(CASE WHEN type = 'recharge' THEN credits ELSE 0 END), 0) AS recharge_credits,
         COALESCE(SUM(CASE WHEN type = 'refund' THEN credits ELSE 0 END), 0) AS refund_credits,
         COALESCE(SUM(CASE WHEN type = 'manual' THEN credits ELSE 0 END), 0) AS manual_credits,
-        COALESCE(SUM(CASE WHEN type = 'generate' THEN cost ELSE 0 END), 0) AS generate_cost
+        COALESCE(SUM(CASE WHEN type = 'welcome' THEN credits ELSE 0 END), 0) AS welcome_credits,
+        COALESCE(SUM(CASE WHEN type = 'generate' THEN cost ELSE 0 END), 0) AS generate_cost,
+        COUNT(*) AS log_count
        FROM credit_logs`
     )
     .get();
@@ -1423,7 +1452,8 @@ export function getCreditLedgerAudit({ limit = 50 } = {}) {
     Number(totals.redeem_credits || 0) +
     Number(totals.recharge_credits || 0) +
     Number(totals.refund_credits || 0) +
-    Number(totals.manual_credits || 0) -
+    Number(totals.manual_credits || 0) +
+    Number(totals.welcome_credits || 0) -
     Number(totals.generate_cost || 0);
   const mismatches = database
     .prepare(
@@ -1434,6 +1464,7 @@ export function getCreditLedgerAudit({ limit = 50 } = {}) {
             WHEN type = 'recharge' THEN credits
             WHEN type = 'refund' THEN credits
             WHEN type = 'manual' THEN credits
+            WHEN type = 'welcome' THEN credits
             WHEN type = 'generate' THEN -cost
             ELSE 0
           END), 0) AS ledger_credits,
@@ -1495,6 +1526,7 @@ export function getCreditLedgerAudit({ limit = 50 } = {}) {
     rechargeCredits: Number(totals.recharge_credits || 0),
     refundCredits: Number(totals.refund_credits || 0),
     manualCredits: Number(totals.manual_credits || 0),
+    welcomeCredits: Number(totals.welcome_credits || 0),
     generateCost: Number(totals.generate_cost || 0),
     mismatches
   };

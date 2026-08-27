@@ -1966,6 +1966,12 @@ function App() {
       setRedeemMessage("");
       trackEvent(authMode === "register" ? "sign_up" : "login", { method: "account" });
       await refreshSession();
+      // 显示新用户赠送提示
+      if (authMode === "register" && data.welcomeCredits) {
+        setAuthNotice(language === "en"
+          ? `Welcome! You've received ${data.welcomeCredits} free credits to try our GPT Image 2 model.`
+          : `恭喜！您已获得 ${data.welcomeCredits} 积分，可用于体验GPT Image 2模型（1K质量）`);
+      }
     } catch (err) {
       setAuthError(err.message);
     }
