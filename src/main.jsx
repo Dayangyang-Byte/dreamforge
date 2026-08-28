@@ -1869,19 +1869,6 @@ function App() {
     }
   }
 
-  // 检查欢迎弹窗是否已显示过
-  useEffect(() => {
-    const welcomeShown = localStorage.getItem("dreamforge_welcome_shown");
-    if (!welcomeShown) {
-      // 如果用户是新用户（尚未显示过欢迎弹窗），检查session是否有新用户标记
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("new_user") === "1" || params.get("register") === "success") {
-        setWelcomeModalOpen(true);
-        localStorage.setItem("dreamforge_welcome_shown", "1");
-      }
-    }
-  }, []);
-
   function shouldShowAnnouncement(item) {
     if (!item?.enabled || !announcementText(item, "content")) return false;
     const version = item.version || "1";

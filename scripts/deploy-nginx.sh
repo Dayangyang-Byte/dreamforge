@@ -1,0 +1,82 @@
+#!/bin/bash
+# Deploy nginx config with image static file support
+
+cat > /etc/nginx/sites-available/image-gen-studio << 'EOF'
+server {
+    server_name mengjing233.cn www.mengjing233.cn;
+
+    client_max_body_size 30m;
+
+    # SEO安全头
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # 静态文件服务 - 图片
+    location /generated/ {
+        alias /opt/_runtime/image-gen-studio/generated/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location /thumbnails/ {
+        alias /opt/_runtime/image-gen-studio/thumbnails/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location /assets/ {
+        alias /opt/image-gen-studio/dist/assets/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location /bg/ {
+        alias /opt/image-gen-studio/dist/bg/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # API代理
+    location /api/ {
+        proxy_pass http://127.0.0.1:8787;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 30s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+        send_timeout 300s;
+    }
+
+    # 主应用
+    location / {
+        proxy_pass http://127.0.0.1:8787;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 30s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+        send_timeout 300s;
+    }
+
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/mengjing233.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/mengjing233.cn/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+
+server {
+    listen 80;
+    server_name mengjing233.cn www.mengjing233.cn;
+    return 301 https://$host$request_uri;
+}
+EOF
+
+nginx -t && nginx -s reload && echo "nginx reloaded successfully"
