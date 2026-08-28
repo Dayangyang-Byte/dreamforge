@@ -1957,7 +1957,6 @@ function App() {
   async function handleAuth(event) {
     event.preventDefault();
     setAuthError("");
-    setAuthNotice("");
     try {
       const response = await fetch(`${apiBase}/api/auth/${authMode}`, {
         method: "POST",
@@ -2966,7 +2965,6 @@ function App() {
                   onClick={() => {
                     setAuthMode(authMode === "login" ? "register" : "login");
                     setAuthError("");
-                    setAuthNotice("");
                   }}
                 >
                   {authMode === "login" ? t("toRegister") : t("toLogin")}
