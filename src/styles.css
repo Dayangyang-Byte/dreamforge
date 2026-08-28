@@ -1389,6 +1389,14 @@ button {
   width: min(680px, 100%);
 }
 
+.announcement-history-modal {
+  position: relative;
+}
+
+.announcement-history-modal > .announcement-panel-head {
+  padding-right: 58px;
+}
+
 .announcement-panel-head {
   display: flex;
   align-items: flex-start;

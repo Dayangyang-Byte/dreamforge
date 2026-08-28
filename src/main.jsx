@@ -1889,6 +1889,7 @@ function App() {
   function handleAnnouncementOverlayKeyDown(event) {
     if (event.key === "Escape") {
       closeAnnouncementOverlay();
+      setAnnouncementPanelOpen(false);
     }
   }
 
@@ -1909,10 +1910,10 @@ function App() {
   }
 
   useEffect(() => {
-    if (!announcementOpen) return undefined;
+    if (!announcementOpen && !announcementPanelOpen) return undefined;
     window.addEventListener("keydown", handleAnnouncementOverlayKeyDown);
     return () => window.removeEventListener("keydown", handleAnnouncementOverlayKeyDown);
-  }, [announcementOpen]);
+  }, [announcementOpen, announcementPanelOpen]);
 
   async function submit(event) {
     event?.preventDefault();
@@ -2675,7 +2676,7 @@ function App() {
           aria-modal="true"
           aria-labelledby="site-announcement-title"
           onClick={closeAnnouncementOverlay}
-          onTouchStart={() => setTouchStartY && setTouchStartY(event.touches[0].clientY)}
+          onTouchStart={(event) => setTouchStartY(event.touches[0].clientY)}
           onTouchEnd={(event) => {
             if (touchStartY && event.changedTouches[0].clientY - touchStartY > 100) {
               closeAnnouncementOverlay();
@@ -2711,8 +2712,14 @@ function App() {
       )}
 
       {announcementPanelOpen && (
-        <div className="announcement-overlay" role="dialog" aria-modal="true" aria-labelledby="site-announcement-panel-title">
-          <div className="announcement-modal announcement-history-modal">
+        <div
+          className="announcement-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="site-announcement-panel-title"
+          onClick={() => setAnnouncementPanelOpen(false)}
+        >
+          <div className="announcement-modal announcement-history-modal" onClick={(event) => event.stopPropagation()}>
             <div className="announcement-panel-head">
               <div>
                 <div className="announcement-badge">
@@ -2721,8 +2728,13 @@ function App() {
                 </div>
                 <h2 id="site-announcement-panel-title">{t("siteAnnouncement")}</h2>
               </div>
-              <button type="button" className="announcement-close-button" onClick={() => setAnnouncementPanelOpen(false)}>
-                {t("close")}
+              <button
+                type="button"
+                className="announcement-dismiss-button"
+                aria-label={t("close")}
+                onClick={() => setAnnouncementPanelOpen(false)}
+              >
+                <X size={24} strokeWidth={2.5} />
               </button>
             </div>
 
