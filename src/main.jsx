@@ -311,6 +311,9 @@ const uiText = {
     siteAnnouncement: "网站公告",
     gotIt: "我知道了",
     close: "关闭",
+    welcomeGift: "新用户福利",
+    welcomeTitle: "🎉 恭喜获得免费积分！",
+    welcomeDesc: "注册成功！您已获得免费积分，可以体验梦幻电影感AI图像生成。",
     loadingAnnouncements: "正在读取公告...",
     currentAnnouncement: "当前公告",
     noAnnouncements: "暂时还没有公告。",
@@ -415,6 +418,9 @@ const uiText = {
     siteAnnouncement: "Site Update",
     gotIt: "Got it",
     close: "Close",
+    welcomeGift: "Welcome Gift",
+    welcomeTitle: "🎉 You Got Free Credits!",
+    welcomeDesc: "Registration successful! You've received free credits to try dreamy cinematic AI image generation.",
     loadingAnnouncements: "Loading updates...",
     currentAnnouncement: "Current",
     noAnnouncements: "No updates yet.",
@@ -1689,7 +1695,8 @@ function App() {
   const [authMode, setAuthMode] = useState("login");
   const [authForm, setAuthForm] = useState({ account: "", password: "" });
   const [authError, setAuthError] = useState("");
-  const [authNotice, setAuthNotice] = useState("");
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+  const [welcomeCredits, setWelcomeCredits] = useState(0);
   const [redeemCode, setRedeemCode] = useState("");
   const [redeemMessage, setRedeemMessage] = useState("");
   const [memberTab, setMemberTab] = useState("redeem");
@@ -1862,6 +1869,19 @@ function App() {
     }
   }
 
+  // 检查欢迎弹窗是否已显示过
+  useEffect(() => {
+    const welcomeShown = localStorage.getItem("dreamforge_welcome_shown");
+    if (!welcomeShown) {
+      // 如果用户是新用户（尚未显示过欢迎弹窗），检查session是否有新用户标记
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("new_user") === "1" || params.get("register") === "success") {
+        setWelcomeModalOpen(true);
+        localStorage.setItem("dreamforge_welcome_shown", "1");
+      }
+    }
+  }, []);
+
   function shouldShowAnnouncement(item) {
     if (!item?.enabled || !announcementText(item, "content")) return false;
     const version = item.version || "1";
@@ -1966,11 +1986,10 @@ function App() {
       setRedeemMessage("");
       trackEvent(authMode === "register" ? "sign_up" : "login", { method: "account" });
       await refreshSession();
-      // 显示新用户赠送提示
+      // 显示新用户赠送积分弹窗（独立的欢迎弹窗，在公告之前）
       if (authMode === "register" && data.welcomeCredits) {
-        setAuthNotice(language === "en"
-          ? `Welcome! You've received ${data.welcomeCredits} free credits to try our GPT Image 2 model.`
-          : `恭喜！您已获得 ${data.welcomeCredits} 积分，可用于体验GPT Image 2模型（1K质量）`);
+        setWelcomeCredits(data.welcomeCredits);
+        setWelcomeModalOpen(true);
       }
     } catch (err) {
       setAuthError(err.message);
@@ -2613,6 +2632,56 @@ function App() {
         </nav>
       </footer>
 
+      {/* 新用户赠送积分弹窗（优先级高于公告，用户关闭后才显示公告） */}
+      {welcomeModalOpen && (
+        <div className="welcome-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title">
+          <div className="welcome-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="welcome-modal-header">
+              <div className="welcome-modal-badge">
+                <Sparkles size={16} />
+                <span>{t("welcomeGift")}</span>
+              </div>
+              <button
+                type="button"
+                className="welcome-modal-close"
+                aria-label={t("close")}
+                onClick={() => setWelcomeModalOpen(false)}
+              >
+                <X size={20} strokeWidth={2.5} />
+              </button>
+            </div>
+            <div className="welcome-modal-content">
+              <h2 id="welcome-modal-title">{t("welcomeTitle")}</h2>
+              <p className="welcome-modal-amount">{welcomeCredits} {t("credits")}</p>
+              <p className="welcome-modal-desc">{t("welcomeDesc")}</p>
+              <ul className="welcome-modal-features">
+                <li>
+                  <Check size={14} />
+                  <span>{language === "en" ? "Native Chinese prompt support" : "中文原生提示词"}</span>
+                </li>
+                <li>
+                  <Check size={14} />
+                  <span>{language === "en" ? "Reference image control" : "参考图精准控制"}</span>
+                </li>
+                <li>
+                  <Check size={14} />
+                  <span>{language === "en" ? "Free to try, no payment required" : "免费试用，无需付费"}</span>
+                </li>
+              </ul>
+            </div>
+            <div className="welcome-modal-footer">
+              <button
+                type="button"
+                className="welcome-modal-cta"
+                onClick={() => setWelcomeModalOpen(false)}
+              >
+                {language === "en" ? "Start Creating" : "立即体验"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {announcementOpen && announcement?.enabled && (
         <div
           className="announcement-overlay"
@@ -2901,7 +2970,6 @@ function App() {
                   />
                 </label>
                 {authError && <p className="auth-error">{authError}</p>}
-                {authNotice && <p className="auth-message">{authNotice}</p>}
                 <button className="auth-submit" type="submit">
                   {authMode === "login" ? t("login") : t("register")}
                 </button>
