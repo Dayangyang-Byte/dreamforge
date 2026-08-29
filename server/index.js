@@ -74,7 +74,8 @@ const dbPath = path.join(appRuntimeDir, "app.db");
 const usersPath = path.join(appRuntimeDir, "users.json");
 const redeemCodesPath = path.join(appRuntimeDir, "redeem-codes.json");
 const adminSessions = new Set();
-const adminPassword = process.env.ADMIN_PASSWORD || "admin123456";
+// 管理后台密码：必须通过环境变量配置（未配置时拒绝登录，避免弱默认密码）
+const adminPassword = process.env.ADMIN_PASSWORD || "";
 
 initDatabase(dbPath);
 
@@ -203,26 +204,12 @@ app.post("/api/auth/register", async (req, res) => {
     const users = await loadUsers();
     if (users.accounts[account]) throw new Error("账号已存在，请直接登录");
 
-    // 防薅羊毛：同一IP最多注册3个账号
-    const ip = getClientIp(req);
-    const database = getDatabase();
-    const recentRegistrations = database
-      .prepare(
-        `SELECT account, created_at FROM users
-         WHERE ip = ? AND created_at > datetime('now', '-1 hour')
-         ORDER BY created_at DESC LIMIT 10`
-      )
-      .all(ip);
+    // 防薅羊毛：同一IP 24小时内最多注册3个账号（IP来源已做防伪造处理）
+    const ip = getClientIpForLimiting(req);
+    const sameIpCount = countRecentRegistrations(ip, 24);
 
-    // 检查同IP过去1小时内是否已有注册记录
-    const sameIpCount = database
-      .prepare(
-        `SELECT COUNT(*) AS cnt FROM users WHERE ip = ?`
-      )
-      .get(ip);
-
-    if (sameIpCount.cnt >= 3) {
-      throw new Error("该IP地址已注册超过3个账号，请稍后再试或联系客服");
+    if (sameIpCount >= 3) {
+      throw new Error("该IP地址24小时内注册账号数量已达上限，请明日再试或联系客服");
     }
 
     const now = new Date().toISOString();
@@ -232,6 +219,7 @@ app.post("/api/auth/register", async (req, res) => {
       passwordHash: hashPassword(password),
       credits: 2, // 新用户注册赠送2积分
       token,
+      tokenIssuedAt: now,
       createdAt: now,
       updatedAt: now,
       creditLogs: [],
@@ -254,7 +242,7 @@ app.post("/api/auth/register", async (req, res) => {
     });
 
     req.auditAccount = account;
-    req.auditDetail = { ip, sameIpCount: sameIpCount.cnt + 1 };
+    req.auditDetail = { ip, sameIpCount: sameIpCount + 1 };
     res.json({
       token,
       user: publicUser(users.accounts[account]),
@@ -272,11 +260,17 @@ app.post("/api/auth/login", async (req, res) => {
     const password = String(req.body.password || "");
     const users = await loadUsers();
     const user = users.accounts[account];
-    if (!user || user.passwordHash !== hashPassword(password)) {
+    if (!user || !verifyPassword(password, user.passwordHash)) {
       throw new Error("账号或密码不正确");
     }
 
+    // 旧的无盐哈希在登录成功时自动升级为 scrypt（用户无感知）
+    if (isLegacyPasswordHash(user.passwordHash)) {
+      user.passwordHash = hashPassword(password);
+    }
+
     user.token = createToken();
+    user.tokenIssuedAt = new Date().toISOString();
     user.updatedAt = new Date().toISOString();
     await saveUsers(users);
     req.auditAccount = account;
@@ -422,11 +416,43 @@ app.get("/api/history", async (req, res) => {
   }
 });
 
+// 管理后台登录限流：15分钟窗口内最多8次失败（防暴力破解）
+const adminLoginFailures = new Map(); // ip -> { count, resetAt }
+const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const ADMIN_LOGIN_MAX_FAILURES = 8;
+
+function isAdminLoginBlocked(ip) {
+  const entry = adminLoginFailures.get(ip);
+  if (!entry) return false;
+  if (Date.now() > entry.resetAt) {
+    adminLoginFailures.delete(ip);
+    return false;
+  }
+  return entry.count >= ADMIN_LOGIN_MAX_FAILURES;
+}
+
+function recordAdminLoginFailure(ip) {
+  const entry = adminLoginFailures.get(ip);
+  if (!entry || Date.now() > entry.resetAt) {
+    adminLoginFailures.set(ip, { count: 1, resetAt: Date.now() + ADMIN_LOGIN_WINDOW_MS });
+  } else {
+    entry.count += 1;
+  }
+}
+
 app.post("/api/admin/login", async (req, res) => {
   try {
+    const ip = getClientIpForLimiting(req);
+    if (isAdminLoginBlocked(ip)) {
+      return res.status(429).json({ error: "尝试次数过多，请15分钟后再试" });
+    }
     req.auditAction = "admin_login";
     const password = String(req.body.password || "");
-    if (!password || password !== adminPassword) throw new Error("管理员密码不正确");
+    if (!password || password !== adminPassword) {
+      recordAdminLoginFailure(ip);
+      throw new Error("管理员密码不正确");
+    }
+    adminLoginFailures.delete(ip);
     const token = createToken();
     adminSessions.add(token);
     res.json({ token, admin: { name: "admin" } });
@@ -751,13 +777,42 @@ app.post("/api/admin/redeem-codes", async (req, res) => {
   }
 });
 
+// 举报接口限流：同IP每小时最多5条（防垃圾灌水）
+const reportFailures = new Map(); // ip -> { count, resetAt }
+const REPORT_WINDOW_MS = 60 * 60 * 1000;
+const REPORT_MAX_PER_WINDOW = 5;
+
+function isReportBlocked(ip) {
+  const entry = reportFailures.get(ip);
+  if (!entry) return false;
+  if (Date.now() > entry.resetAt) {
+    reportFailures.delete(ip);
+    return false;
+  }
+  return entry.count >= REPORT_MAX_PER_WINDOW;
+}
+
+function recordReport(ip) {
+  const entry = reportFailures.get(ip);
+  if (!entry || Date.now() > entry.resetAt) {
+    reportFailures.set(ip, { count: 1, resetAt: Date.now() + REPORT_WINDOW_MS });
+  } else {
+    entry.count += 1;
+  }
+}
+
 app.post("/api/report", async (req, res) => {
   try {
+    const ip = getClientIpForLimiting(req);
+    if (isReportBlocked(ip)) {
+      return res.status(429).json({ error: "提交过于频繁，请稍后再试" });
+    }
     req.auditAction = "submit_report";
     const contact = clean(req.body.contact || "").slice(0, 120);
     const type = clean(req.body.type || "other").slice(0, 40);
     const content = clean(req.body.content || "").slice(0, 2000);
     if (!content || content.length < 8) throw new Error("请填写至少 8 个字的举报内容");
+    recordReport(ip);
     const id = insertReport({
       contact,
       type,
@@ -1236,6 +1291,32 @@ function inferAction(req) {
 function getClientIp(req) {
   const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
   return forwarded || req.socket?.remoteAddress || "";
+}
+
+// 注册限流：只信任已知代理链的 X-Forwarded-For（防伪造IP绕过），默认走直连IP
+const TRUSTED_PROXY_HOPS = Number(process.env.TRUSTED_PROXY_HOPS || 0);
+function getClientIpForLimiting(req) {
+  if (TRUSTED_PROXY_HOPS <= 0) {
+    return req.socket?.remoteAddress || "";
+  }
+  const parts = String(req.headers["x-forwarded-for"] || "").split(",").map((part) => part.trim()).filter(Boolean);
+  const fromRight = parts.slice(Math.max(0, parts.length - TRUSTED_PROXY_HOPS));
+  return fromRight[0] || req.socket?.remoteAddress || "";
+}
+
+// 24小时滑动窗口注册限流（修复：旧逻辑为终身累计且可被伪造IP绕过）
+function countRecentRegistrations(ip, hours = 24) {
+  try {
+    const database = getDatabase();
+    return database
+      .prepare(
+        `SELECT COUNT(*) AS cnt FROM users
+         WHERE ip = ? AND created_at > datetime('now', ?)`
+      )
+      .get(ip, `-${hours} hours`)?.cnt || 0;
+  } catch {
+    return 0;
+  }
 }
 
 function checkPromptSafety(prompt) {
@@ -5042,12 +5123,14 @@ async function persistGeneratedImage(image, jobId, index) {
     return { ...image, thumbnailUrl: image?.thumbnailUrl || url };
   }
 
-  const fileBase = `${safeFileName(jobId)}_${index + 1}`;
+  // 文件名加入随机段，防止按时间戳枚举遍历他人图片
+  const randomSegment = crypto.randomBytes(6).toString("hex");
+  const fileBase = `${safeFileName(jobId)}_${index + 1}_${randomSegment}`;
   const fileName = `${fileBase}.${imageAsset.extension}`;
   const filePath = path.join(generatedDir, fileName);
   await fs.writeFile(filePath, imageAsset.buffer);
   const publicUrl = `/generated/${fileName}`;
-  const thumbnailUrl = await createGeneratedThumbnail(imageAsset.buffer, jobId, index);
+  const thumbnailUrl = await createGeneratedThumbnail(imageAsset.buffer, jobId, index, fileBase);
   return {
     ...image,
     url: publicUrl,
@@ -5057,10 +5140,11 @@ async function persistGeneratedImage(image, jobId, index) {
   };
 }
 
-async function createGeneratedThumbnail(buffer, jobId, index) {
+async function createGeneratedThumbnail(buffer, jobId, index, baseName = "") {
   try {
     await fs.mkdir(thumbnailsDir, { recursive: true });
-    const fileName = `${safeFileName(jobId)}_${index + 1}.webp`;
+    // 缩略图与原图同名（含随机段）；历史回填沿用原图文件名
+    const fileName = baseName ? `${baseName}.webp` : `${safeFileName(jobId)}_${index + 1}.webp`;
     const filePath = path.join(thumbnailsDir, fileName);
     await sharp(buffer)
       .rotate()
@@ -5082,7 +5166,8 @@ async function ensureHistoryThumbnails(history = []) {
     const sourcePath = path.join(generatedDir, fileName);
     try {
       const buffer = await fs.readFile(sourcePath);
-      const thumbnailUrl = await createGeneratedThumbnail(buffer, item.jobId || item.id, Number(item.imageIndex || 0));
+      const baseName = fileName.replace(/\.[^.]+$/, "");
+      const thumbnailUrl = await createGeneratedThumbnail(buffer, item.jobId || item.id, Number(item.imageIndex || 0), baseName);
       if (thumbnailUrl) {
         item.thumbnailUrl = thumbnailUrl;
         updateImageThumbnailUrl(item.id, thumbnailUrl);
@@ -5350,6 +5435,14 @@ async function requireUser(req) {
   const users = await loadUsers();
   const user = Object.values(users.accounts).find((item) => item.token === token);
   if (!user) throw new Error("登录状态已失效，请重新登录");
+
+  // token 有效期 30 天：老用户无 tokenIssuedAt 视为长期有效（不强制下线）
+  if (user.tokenIssuedAt) {
+    const ageMs = Date.now() - new Date(user.tokenIssuedAt).getTime();
+    if (Number.isFinite(ageMs) && ageMs > 30 * 24 * 60 * 60 * 1000) {
+      throw new Error("登录已过期，请重新登录");
+    }
+  }
   return { users, user };
 }
 
@@ -5399,8 +5492,29 @@ function normalizeHistoryOffset(value) {
   return Math.max(Math.trunc(number), 0);
 }
 
+// 密码哈希：scrypt + 随机盐；旧的无盐 sha256 哈希在登录成功时自动升级
 function hashPassword(password) {
-  return crypto.createHash("sha256").update(`dreamforge:${password}`).digest("hex");
+  const salt = crypto.randomBytes(16).toString("hex");
+  const derived = crypto.scryptSync(String(password), salt, 64).toString("hex");
+  return `scrypt$${salt}$${derived}`;
+}
+
+function verifyPassword(password, stored) {
+  const value = String(stored || "");
+  if (value.startsWith("scrypt$")) {
+    const [, salt, expected] = value.split("$");
+    if (!salt || !expected) return false;
+    const derived = crypto.scryptSync(String(password), salt, 64).toString("hex");
+    const a = Buffer.from(derived, "hex");
+    const b = Buffer.from(expected, "hex");
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  }
+  const legacy = crypto.createHash("sha256").update(`dreamforge:${password}`).digest("hex");
+  return value === legacy;
+}
+
+function isLegacyPasswordHash(stored) {
+  return Boolean(stored) && !String(stored).startsWith("scrypt$");
 }
 
 function createToken() {
@@ -5614,8 +5728,21 @@ app.use(express.static(distDir, {
   }
 }));
 
-app.get(/^(?!\/api).*/, async (_req, res, next) => {
+// SPA 白名单路由：只对这些入口返回 index.html（修复软404：乱路径一律真404）
+const SPA_ENTRY_ROUTES = new Set([
+  "/",
+  "/member"
+]);
+const SPA_ENTRY_PREFIXES = ["/admin"];
+
+app.get(/^(?!\/api).*/, async (req, res, next) => {
   try {
+    const routePath = String(req.path || "/").replace(/\/+$/, "") || "/";
+    const isSpaEntry = SPA_ENTRY_ROUTES.has(routePath) ||
+      SPA_ENTRY_PREFIXES.some((prefix) => routePath === prefix || routePath.startsWith(prefix + "/"));
+    if (!isSpaEntry) {
+      return res.status(404).set("Content-Type", "text/plain; charset=utf-8").send("Not Found");
+    }
     await fs.access(path.join(distDir, "index.html"));
     res.setHeader("Cache-Control", "no-store");
     res.sendFile(path.join(distDir, "index.html"));
