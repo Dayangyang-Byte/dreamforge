@@ -9,6 +9,12 @@ export function initDatabase(dbPath) {
   db = new DatabaseSync(dbPath);
   db.exec("PRAGMA journal_mode = WAL;");
   db.exec("PRAGMA foreign_keys = ON;");
+  // 幂等迁移：老库补列
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN token_issued_at TEXT");
+  } catch (e) {
+    if (!String(e?.message || "").includes("duplicate column")) throw e;
+  }
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       account TEXT PRIMARY KEY,
@@ -337,15 +343,16 @@ export function saveUserStore(store) {
 export function upsertUser(user) {
   getDatabase()
     .prepare(
-      `INSERT INTO users (account, password_hash, credits, token, ip, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO users (account, password_hash, credits, token, ip, created_at, updated_at, token_issued_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(account) DO UPDATE SET
          password_hash = excluded.password_hash,
          credits = excluded.credits,
          token = excluded.token,
          ip = excluded.ip,
          created_at = excluded.created_at,
-         updated_at = excluded.updated_at`
+         updated_at = excluded.updated_at,
+         token_issued_at = excluded.token_issued_at`
     )
     .run(
       user.account,
@@ -354,7 +361,8 @@ export function upsertUser(user) {
       user.token || "",
       user.ip || null,
       user.createdAt || new Date().toISOString(),
-      user.updatedAt || new Date().toISOString()
+      user.updatedAt || new Date().toISOString(),
+      user.tokenIssuedAt || null
     );
 }
 
@@ -1570,6 +1578,8 @@ function dbUserToRuntimeUser(row, logs = []) {
     passwordHash: row.password_hash,
     credits: Number(row.credits || 0),
     token: row.token || "",
+    tokenIssuedAt: row.token_issued_at || "",
+    ip: row.ip || "",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     creditLogs: logs
