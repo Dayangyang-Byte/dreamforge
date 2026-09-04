@@ -300,7 +300,7 @@ const uiText = {
     remaining: "剩余",
     referenceCountSuffix: "张参考图",
     download: "下载",
-    footerTitle: "DreamForge 梦境图片创作",
+    footerTitle: "梦境AI - 梦幻电影感AI绘画工具",
     footerNote: "用户生成内容默认不公开展示，不提供评论、转发、群组等互动功能。",
     terms: "用户协议",
     privacy: "隐私政策",
