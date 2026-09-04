@@ -1,0 +1,199 @@
+{
+  "timestamp": "2026-09-01T07:05:52.038Z",
+  "url": "https://mengjing233.cn",
+  "checks": [
+    {
+      "name": "robots.txt 存在",
+      "status": "pass",
+      "detail": "Content-Type: text/plain; charset=utf-8",
+      "severity": "info"
+    },
+    {
+      "name": "robots.txt 放行所有爬虫",
+      "status": "pass",
+      "detail": "包含 Allow: / 或 User-agent: *",
+      "severity": "info"
+    },
+    {
+      "name": "robots.txt 放行AI爬虫",
+      "status": "pass",
+      "detail": "建议添加 GPTBot, ClaudeBot 等AI爬虫规则",
+      "severity": "info"
+    },
+    {
+      "name": "robots.txt 无禁止项",
+      "status": "pass",
+      "detail": "检查是否有 Disallow: / 或禁止主要爬虫",
+      "severity": "info"
+    },
+    {
+      "name": "sitemap.xml 存在",
+      "status": "pass",
+      "detail": "发现 4 个URL",
+      "severity": "info"
+    },
+    {
+      "name": "sitemap.xml 包含priority",
+      "status": "pass",
+      "detail": "建议每个URL设置priority值",
+      "severity": "info"
+    },
+    {
+      "name": "sitemap.xml 包含changefreq",
+      "status": "pass",
+      "detail": "建议设置changefreq",
+      "severity": "info"
+    },
+    {
+      "name": "Title标签",
+      "status": "pass",
+      "detail": "长度: 31 字符",
+      "severity": "info"
+    },
+    {
+      "name": "Meta description",
+      "status": "pass",
+      "detail": "长度: 72 字符",
+      "severity": "info"
+    },
+    {
+      "name": "Meta keywords",
+      "status": "pass",
+      "detail": "包含: 梦境AI,梦幻AI绘画,AI图片生成,电影感插画,AI绘图工具,创意视觉生成",
+      "severity": "info"
+    },
+    {
+      "name": "Meta robots",
+      "status": "pass",
+      "detail": "index,follow",
+      "severity": "info"
+    },
+    {
+      "name": "Open Graph title",
+      "status": "pass",
+      "detail": "内容: 梦境AI - 梦幻电影感AI绘画工具...",
+      "severity": "info"
+    },
+    {
+      "name": "Open Graph description",
+      "status": "pass",
+      "detail": "长度: 46 字符",
+      "severity": "info"
+    },
+    {
+      "name": "Open Graph image",
+      "status": "pass",
+      "detail": "URL: https://mengjing233.cn/og-image.jpg",
+      "severity": "info"
+    },
+    {
+      "name": "Open Graph url",
+      "status": "pass",
+      "detail": "URL: https://mengjing233.cn/",
+      "severity": "info"
+    },
+    {
+      "name": "Twitter Card",
+      "status": "pass",
+      "detail": "类型: summary_large_image",
+      "severity": "info"
+    },
+    {
+      "name": "Twitter Title",
+      "status": "pass",
+      "detail": "内容: 梦境AI - 梦幻电影感AI绘画工具...",
+      "severity": "info"
+    },
+    {
+      "name": "Twitter Image",
+      "status": "pass",
+      "detail": "URL: https://mengjing233.cn/og-image.jpg",
+      "severity": "info"
+    },
+    {
+      "name": "Canonical URL",
+      "status": "pass",
+      "detail": "https://mengjing233.cn/",
+      "severity": "info"
+    },
+    {
+      "name": "JSON-LD 结构化数据",
+      "status": "pass",
+      "detail": "类型: Organization",
+      "severity": "info"
+    },
+    {
+      "name": "JSON-LD 价格信息",
+      "status": "warning",
+      "detail": "建议添加价格结构化数据",
+      "severity": "info"
+    },
+    {
+      "name": "核心关键词密度",
+      "status": "info",
+      "detail": "梦境AI: 15, DreamForge: 22, AI图片: 5, AI生成: 1, GPT Image: 3",
+      "severity": "info"
+    },
+    {
+      "name": "页面文字密度",
+      "status": "warning",
+      "detail": "约 488 个文字（不含HTML标签）",
+      "severity": "info"
+    },
+    {
+      "name": "价格信息静态化",
+      "status": "pass",
+      "detail": "价格信息应直接在HTML中，而非JS动态生成",
+      "severity": "info"
+    },
+    {
+      "name": "核心内容静态化",
+      "status": "pass",
+      "detail": "核心描述应直接在HTML中",
+      "severity": "info"
+    },
+    {
+      "name": "HSTS 安全头",
+      "status": "pass",
+      "detail": "max-age: 63072000",
+      "severity": "info"
+    },
+    {
+      "name": "Cache-Control",
+      "status": "pass",
+      "detail": "public, max-age=0, must-revalidate",
+      "severity": "info"
+    },
+    {
+      "name": "X-Frame-Options",
+      "status": "warning",
+      "detail": "缺少（可能被点击劫持）",
+      "severity": "info"
+    },
+    {
+      "name": "Content-Type",
+      "status": "pass",
+      "detail": "text/html; charset=utf-8",
+      "severity": "info"
+    },
+    {
+      "name": "英文页面 /en",
+      "status": "pass",
+      "detail": "英文页面存在",
+      "severity": "info"
+    },
+    {
+      "name": "Hreflang 标签",
+      "status": "pass",
+      "detail": "找到 3 个hreflang标签",
+      "severity": "info"
+    }
+  ],
+  "summary": {
+    "total": 31,
+    "passed": 27,
+    "failed": 0,
+    "warnings": 4,
+    "score": 87
+  }
+}

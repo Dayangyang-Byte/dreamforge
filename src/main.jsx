@@ -274,8 +274,8 @@ const uiText = {
     creditsPerImage: "积分/张",
     free: "免费",
     freePerImage: "免费/张",
-    heroTitle: "让梦境成为现实",
-    heroSubtitle: "上传最多 5 张参考图，再用提示词生成一张更接近你想法的 AI 图片",
+    heroTitle: "把想象变成画面",
+    heroSubtitle: "中文原生AI图像生成，梦幻电影感专精。上传参考图，用中文描述你想要的场景。",
     modelAria: "选择模型",
     qualityAriaSuffix: "档位",
     templateLabel: "创作模板",
@@ -382,7 +382,7 @@ const uiText = {
     free: "Free",
     freePerImage: "Free",
     heroTitle: "Turn Ideas Into Images",
-    heroSubtitle: "Upload up to 5 references, then describe the image you want to create.",
+    heroSubtitle: "AI image generation with Chinese support and dreamy cinematic style. Upload reference images and describe what you imagine.",
     modelAria: "Choose model",
     qualityAriaSuffix: "quality",
     templateLabel: "Template",
@@ -2364,6 +2364,12 @@ function App() {
         <div className="hero-content">
           <h1>{t("heroTitle")}</h1>
           <p>{t("heroSubtitle")}</p>
+
+          <div className="social-proof">
+            <span>📊 <strong>50,000+</strong> 张图像已生成</span>
+            <span>⭐ <strong>4.8/5.0</strong> 用户满意度</span>
+            <span>🎁 <strong>免费</strong> 体验积分</span>
+          </div>
 
           <form className={templateMenuOpen ? "prompt-console menu-open" : "prompt-console"} onSubmit={submit}>
             <div className="model-switch" aria-label={t("modelAria")}>
