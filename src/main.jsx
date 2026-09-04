@@ -2321,7 +2321,7 @@ function App() {
     <main className="dream-page">
       <nav className="top-nav">
         <a className="logo" href="/">
-          <span>Dream</span>Forge
+          <span>{language === "en" ? "Dream" : "梦境"}</span>{language === "en" ? "Forge" : "AI"}
         </a>
         <div className="nav-actions">
           <button className="language-button" type="button" onClick={switchLanguage} aria-label={t("switchLanguage")}>
