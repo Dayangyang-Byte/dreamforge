@@ -84,7 +84,7 @@ const modelRegistry = {
     id: "forge",
     label: "Forge生图模型",
     provider: "agnes",
-    model: "agnes-image-2.1-flash",
+    model: "agnes-image-2.5-flash",
     creditCost: 0
   },
   "gpt-image-2": {
