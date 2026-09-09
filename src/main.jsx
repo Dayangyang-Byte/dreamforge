@@ -306,6 +306,7 @@ const uiText = {
     privacy: "隐私政策",
     report: "投诉举报",
     icp: "ICP备案查询",
+    guide: "使用指南",
     announcement: "公告",
     announcementCenter: "公告中心",
     siteAnnouncement: "网站公告",
@@ -413,6 +414,7 @@ const uiText = {
     privacy: "Privacy",
     report: "Report",
     icp: "ICP Lookup",
+    guide: "User Guide",
     announcement: "Update",
     announcementCenter: "Updates",
     siteAnnouncement: "Site Update",
@@ -2622,6 +2624,7 @@ function App() {
           <button type="button" onClick={() => setPolicyOpen("privacy")}>{t("privacy")}</button>
           <button type="button" onClick={() => setPolicyOpen("report")}>{t("report")}</button>
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">{t("icp")}</a>
+          <a href="/guide">{t("guide")}</a>
         </nav>
       </footer>
 
