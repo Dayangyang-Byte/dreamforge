@@ -22,6 +22,11 @@
     { "source": "/demo-uiverse.html", "destination": "/demo-uiverse.html" },
     { "source": "/ui-preview.html", "destination": "/ui-preview.html" },
     { "source": "/guide", "destination": "/guide.html" },
+    { "source": "/guide/prompt-tips", "destination": "/guide/prompt-tips.html" },
+    { "source": "/guide/dreamforge-vs-midjourney", "destination": "/guide/dreamforge-vs-midjourney.html" },
+    { "source": "/guide/ai-scenery", "destination": "/guide/ai-scenery.html" },
+    { "source": "/guide/ai-ecommerce", "destination": "/guide/ai-ecommerce.html" },
+    { "source": "/guide/ai-avatar", "destination": "/guide/ai-avatar.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
