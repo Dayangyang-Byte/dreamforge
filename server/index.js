@@ -85,7 +85,7 @@ const modelRegistry = {
     label: "Forge生图模型",
     provider: "agnes",
     model: "agnes-image-2.5-flash",
-    creditCost: 0
+    creditCost: 1
   },
   "gpt-image-2": {
     id: "gpt-image-2",
@@ -1321,29 +1321,33 @@ function countRecentRegistrations(ip, hours = 24) {
 
 function checkPromptSafety(prompt) {
   const text = String(prompt || "").toLowerCase();
-  const blocked = [
-    "习近平",
-    "国家领导人",
-    "政治敏感",
-    "裸照",
-    "色情",
-    "成人视频",
-    "未成年人色情",
-    "儿童色情",
-    "血腥",
-    "虐杀",
-    "恐怖袭击",
-    "炸弹制作",
-    "诈骗",
-    "钓鱼网站"
+
+  // 分类敏感词（子串匹配；命中任一即拦截）
+  // 注意：只放"高确定性敏感词"，避免误伤正常创作（如"中国""美"等不加）
+  const blockedCategories = [
+    // 儿童安全（最高优先，不可协商）
+    ["儿童色情", "未成年色情", "萝莉", "正太", "幼女", "幼男", "恋童", "child sex", "child porn", "csam", "incest", "loli", "shota", "little girl nude", "baby porn", "儿童裸"],
+    // 色情 / 裸露
+    ["色情", "情色", "成人视频", "成人片", "裸照", "裸体", "性行为", "性交", "自慰", "porn", "nsfw", "explicit", "nude", "nudes", "xxx", "hentai"],
+    // 暴力 / 恐怖
+    ["血腥", "虐杀", "恐怖袭击", "肢解", "杀人", "自杀", "gore", "beheading", "massacre"],
+    // 武器 / 危险物品制作
+    ["炸弹制作", "武器制作", "枪支制作", "制毒", "爆炸物", "how to make a bomb", "how to make a gun"],
+    // 政治敏感（领导人姓名 + 高危口号）
+    ["习近平", "国家领导人", "政治敏感", "暴动", "颠覆"],
+    // 诈骗 / 非法引流
+    ["诈骗", "钓鱼网站", "洗钱", "赌球", "赌资", "加我微信", "加微信付款", "qq群充值"]
   ];
-  const hit = blocked.find((word) => text.includes(word.toLowerCase()));
-  if (hit) {
-    return {
-      ok: false,
-      reason: hit,
-      message: "提示词包含不适合生成的内容，请修改后再试。"
-    };
+
+  for (const words of blockedCategories) {
+    const hit = words.find((word) => text.includes(word.toLowerCase()));
+    if (hit) {
+      return {
+        ok: false,
+        reason: hit,
+        message: "提示词包含不适合生成的内容，请修改后再试。"
+      };
+    }
   }
 
   return { ok: true };
@@ -1395,7 +1399,7 @@ function getVisionAnalyzerConfigs() {
     process.env.AGNES_VISION_API_KEY ||
     process.env.AGNES_API_KEY ||
     process.env.AGNES_TOKEN;
-  const fallbackModel = process.env.VISION_FALLBACK_MODEL || process.env.AGNES_VISION_MODEL || "agnes-2.5-flash";
+  const fallbackModel = process.env.VISION_FALLBACK_MODEL || process.env.AGNES_VISION_MODEL || "agnes-3.0-flash";
   const fallbackApiBase = normalizeApiBase(
     process.env.VISION_FALLBACK_API_BASE_URL ||
       process.env.AGNES_VISION_API_BASE_URL ||

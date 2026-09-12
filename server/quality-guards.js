@@ -246,8 +246,8 @@ assert(
 assert(
   source.includes("process.env.VISION_FALLBACK_API_KEY") &&
     source.includes("process.env.AGNES_API_KEY") &&
-    source.includes('"agnes-2.5-flash"'),
-  "Agnes 2.5 Flash must remain configured as the reference-analysis fallback option."
+    source.includes('"agnes-3.0-flash"'),
+  "Agnes 3.0 Flash must remain configured as the reference-analysis fallback option."
 );
 
 assert(
