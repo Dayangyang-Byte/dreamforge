@@ -85,7 +85,7 @@ const modelRegistry = {
     label: "Forge生图模型",
     provider: "agnes",
     model: "agnes-image-2.5-flash",
-    creditCost: 1
+    creditCost: 0
   },
   "gpt-image-2": {
     id: "gpt-image-2",
@@ -1389,7 +1389,7 @@ function getVisionAnalyzerConfig() {
   };
 }
 
-function getVisionAnalyzerConfigs() {
+function getVisionAnalyzerConfigs(modelId) {
   const configs = [];
   const primary = getVisionAnalyzerConfig();
   if (primary.apiKey) configs.push(primary);
@@ -1419,6 +1419,12 @@ function getVisionAnalyzerConfigs() {
         timeoutMs: clamp(Number(process.env.VISION_FALLBACK_TIMEOUT_MS || 60_000), 10_000, 180_000)
       });
     }
+  }
+
+  // Forge 生图：视觉分析优先走 Agnes（主），GPT 备用 —— 成本更低、贴合 Agnes 生图链路
+  // 其它模型（gpt-image-2 / nannabanan）保持默认：GPT 主、Agnes 备
+  if (modelId === "forge" && configs.length >= 2 && configs[0].provider !== "agnes") {
+    configs.reverse();
   }
 
   return configs;
@@ -3526,7 +3532,7 @@ async function buildReferencePlan(input) {
     };
   }
 
-  const analyzers = getVisionAnalyzerConfigs();
+  const analyzers = getVisionAnalyzerConfigs(input.model);
   if (!analyzers.length) {
     return {
       ...fallback,
