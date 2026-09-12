@@ -17,6 +17,7 @@ export function AdminApp() {
   const [logs, setLogs] = useState([]);
   const [reports, setReports] = useState([]);
   const [failures, setFailures] = useState([]);
+  const [safetyOnly, setSafetyOnly] = useState(false);
   const [generationRequests, setGenerationRequests] = useState([]);
   const [rechargeOrders, setRechargeOrders] = useState([]);
   const [apiChannels, setApiChannels] = useState([]);
@@ -1052,17 +1053,43 @@ export function AdminApp() {
 
         {tab === "failures" && (
           <div className="admin-table-card">
+            <div style={{ marginBottom: 10, display: "flex", gap: 16, alignItems: "center" }}>
+              <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={safetyOnly}
+                  onChange={(e) => setSafetyOnly(e.target.checked)}
+                />
+                <span>只看敏感词拦截（safety_check）</span>
+              </label>
+              <span style={{ color: "#888", fontSize: 12 }}>
+                共 {failures.length} 条{` `}{safetyOnly ? `· 敏感词 ${failures.filter((f) => f.stage === "safety_check").length} 条` : ""}
+              </span>
+            </div>
             <table>
               <thead>
-                <tr><th>时间</th><th>账号</th><th>模型</th><th>阶段</th><th>比例</th><th>参考图</th><th>预计扣分</th><th>错误</th></tr>
+                <tr><th>时间</th><th>账号</th><th>模型</th><th>阶段</th><th>提示词</th><th>比例</th><th>参考图</th><th>预计扣分</th><th>错误</th></tr>
               </thead>
               <tbody>
-                {failures.map((item) => (
+                {(safetyOnly ? failures.filter((f) => f.stage === "safety_check") : failures).map((item) => (
                   <tr key={item.id}>
                     <td>{formatDate(item.createdAt)}</td>
                     <td>{item.account || "-"}</td>
                     <td>{item.model || "-"}{item.quality ? ` / ${item.quality}` : ""}</td>
-                    <td>{item.stage || "-"}</td>
+                    <td>
+                      <span style={{
+                        padding: "2px 6px",
+                        borderRadius: 4,
+                        fontSize: 11,
+                        background: item.stage === "safety_check" ? "#4a1a1a" : "#1a1a2e",
+                        color: item.stage === "safety_check" ? "#ff6b6b" : "#ccc"
+                      }}>{item.stage || "-"}</span>
+                    </td>
+                    <td title={item.prompt || ""}>
+                      <span style={{ maxWidth: 200, display: "inline-block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>
+                        {item.prompt ? (item.prompt.length > 80 ? item.prompt.slice(0, 80) + "…" : item.prompt) : "-"}
+                      </span>
+                    </td>
                     <td>{item.ratio || "-"}</td>
                     <td>{item.referencesCount || 0}</td>
                     <td>{item.cost || 0}</td>
