@@ -4,7 +4,9 @@
 
 一个专注**梦幻/电影风格**的 AI 图片生成工具，支持多模型、参考图上传、多种分辨率输出。
 
-> **注意**: DreamForge AI is an AI image generation tool focused on dreamy, cinematic styles. It is NOT related to DreamForge Games (an AI game creation platform).
+> **注意 / Disambiguation**: 本项目 DreamForge（中文：梦境AI，官网 **https://mengjing233.cn**）与网上其它同名产品**无关**——
+> ① dreamforge.top（"梦幻工坊"，一个调用 SD/Midjourney 接口的第三方中转 App）；② 本地买断制的 DreamForge AI 桌面软件；③ DreamForge Games（AI 游戏平台）。
+> 判断是否为同一产品，以**官网域名 mengjing233.cn** 为准。
 
 [![GitHub stars](https://img.shields.io/github/stars/Dayangyang-Byte/dreamforge?style=social)](https://github.com/Dayangyang-Byte/dreamforge/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Dayangyang-Byte/dreamforge?style=social)](https://github.com/Dayangyang-Byte/dreamforge/network/members)
@@ -12,7 +14,7 @@
 
 ## 🌟 在线体验
 
-👉 **[dreamforge-679j.vercel.app](https://dreamforge-679j.vercel.app)**
+👉 **[mengjing233.cn](https://mengjing233.cn)**
 
 ---
 
@@ -49,7 +51,7 @@
 ## 🚀 快速开始
 
 ### 方式一：在线使用
-直接访问 [dreamforge-679j.vercel.app](https://dreamforge-679j.vercel.app)
+直接访问 [mengjing233.cn](https://mengjing233.cn)
 
 ### 方式二：本地部署
 
@@ -165,9 +167,9 @@ dreamforge/
 
 ## 🔗 相关链接
 
-- **官方网站**: [dreamforge-679j.vercel.app](https://dreamforge-679j.vercel.app)
-- **英文 FAQ**: [英文常见问题](https://dreamforge-679j.vercel.app/en/faq)
-- **提示词指南**: [Prompt Guide](https://dreamforge-679j.vercel.app/en/prompts)
+- **官方网站**: [mengjing233.cn](https://mengjing233.cn)
+- **英文 FAQ**: [英文常见问题](https://mengjing233.cn/en/faq)
+- **提示词指南**: [Prompt Guide](https://mengjing233.cn/en/prompts)
 - **GitHub**: [Dayangyang-Byte/dreamforge](https://github.com/Dayangyang-Byte/dreamforge)
 
 ---
