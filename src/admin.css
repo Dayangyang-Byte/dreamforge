@@ -992,6 +992,75 @@ select {
   color: rgba(255, 255, 255, 0.44) !important;
 }
 
+.channel-attempt-details {
+  min-width: 0;
+  justify-self: start;
+}
+
+.channel-attempt-details summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.channel-attempt-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.channel-attempt-details summary::after {
+  content: " · 查看原因";
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 11px;
+}
+
+.channel-attempt-details[open] summary::after {
+  content: " · 收起原因";
+}
+
+.channel-attempt-details pre {
+  width: min(620px, calc(100vw - 48px));
+  max-width: 100%;
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(0, 0, 0, 0.2);
+  font: 11px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.failure-reason-inline {
+  grid-column: 1 / -1;
+  color: #ffdce4 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.failure-reason-details {
+  min-width: 180px;
+  max-width: 360px;
+}
+
+.failure-reason-details summary {
+  cursor: pointer;
+  color: #ffdce4;
+  line-height: 1.5;
+  white-space: normal;
+}
+
+.failure-reason-details small {
+  display: block;
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .admin-history-card {
   overflow: hidden;
 }

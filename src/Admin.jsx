@@ -798,6 +798,7 @@ export function AdminApp() {
                     <span>{statusLabel(item.status)} · {stageLabel(item.stage)}</span>
                     <ChannelAttemptSummary attempts={item.channelAttempts} />
                     <span>{formatDate(item.startedAt)} 提交{item.completedAt ? ` · ${formatDuration(item.startedAt, item.completedAt)}` : ""}</span>
+                    {item.status === "failed" && <FailureReasonInline error={item.errorZh || item.error} />}
                     <PromptPreview prompt={item.prompt} expanded={Boolean(expandedPrompts[item.id])} onToggle={() => togglePrompt(item.id)} />
                   </article>
                 ))}
@@ -1068,7 +1069,7 @@ export function AdminApp() {
             </div>
             <table>
               <thead>
-                <tr><th>时间</th><th>账号</th><th>模型</th><th>阶段</th><th>提示词</th><th>比例</th><th>参考图</th><th>预计扣分</th><th>错误</th></tr>
+                <tr><th>时间</th><th>账号</th><th>模型</th><th>阶段</th><th>提示词</th><th>比例</th><th>参考图</th><th>预计扣分</th><th>失败原因</th></tr>
               </thead>
               <tbody>
                 {(safetyOnly ? failures.filter((f) => f.stage === "safety_check") : failures).map((item) => (
@@ -1093,7 +1094,7 @@ export function AdminApp() {
                     <td>{item.ratio || "-"}</td>
                     <td>{item.referencesCount || 0}</td>
                     <td>{item.cost || 0}</td>
-                    <td>{item.error || "-"}</td>
+                    <td><FailureReasonCell error={item.error} errorZh={item.errorZh} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -1285,12 +1286,55 @@ function ChannelAttemptSummary({ attempts }) {
     .map((item, index) => {
       const duration = item.durationMs ? `${Math.round(item.durationMs / 1000)}秒` : "";
       const retry = item.status === "failed" ? `，${item.retryable ? "已允许兜底" : "未触发兜底"}` : "";
-      const error = item.error ? `，${item.error}` : "";
-      return `${index + 1}. ${channelRoleLabel(item.role)} / ${item.model || "-"} / ${item.apiBase || "-"}：${channelStatusLabel(item.status)}${duration ? `，${duration}` : ""}${item.statusCode ? `，HTTP ${item.statusCode}` : ""}${retry}${error}`;
+      const error = item.errorZh || translateAdminError(item.error);
+      return `${index + 1}. ${channelRoleLabel(item.role)} / ${item.model || "-"} / ${item.apiBase || "-"}：${channelStatusLabel(item.status)}${duration ? `，${duration}` : ""}${item.statusCode ? `，HTTP ${item.statusCode}` : ""}${retry}${error ? `，${error}` : ""}`;
     })
     .join("\n");
 
-  return <span className={`channel-attempt-chip ${statusClass}`} title={detail}>{summary}</span>;
+  return (
+    <details className={`channel-attempt-details ${statusClass}`}>
+      <summary className={`channel-attempt-chip ${statusClass}`}>{summary}</summary>
+      <pre>{detail}</pre>
+    </details>
+  );
+}
+
+function FailureReasonInline({ error, errorZh }) {
+  const translated = errorZh || translateAdminError(error);
+  if (!translated) return null;
+  return (
+    <span className="failure-reason-inline" title={error && error !== translated ? error : translated}>
+      失败原因：{translated}
+    </span>
+  );
+}
+
+function FailureReasonCell({ error, errorZh }) {
+  const translated = errorZh || translateAdminError(error);
+  if (!translated) return <span>-</span>;
+  return (
+    <details className="failure-reason-details">
+      <summary>{translated}</summary>
+      {error && error !== translated ? <small>原始：{error}</small> : null}
+    </details>
+  );
+}
+
+function translateAdminError(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (/[\u3400-\u9fff]/.test(raw)) return raw;
+  const lower = raw.toLowerCase();
+  if (lower.includes("fetch failed")) return "连接上游接口失败，服务器无法建立请求。";
+  if (lower.includes("timeout") || lower.includes("timed out")) return "请求上游接口超时，未在规定时间内返回。";
+  if (lower.includes("no usable image") || lower.includes("no image")) return "上游没有返回可用图片。";
+  if (lower.includes("rate limit") || lower.includes("too many requests")) return "上游请求过多，触发了限流。";
+  if (lower.includes("unauthorized") || lower.includes("invalid api key") || lower.includes("invalid key")) return "上游 API Key 无效或未授权。";
+  if (lower.includes("forbidden") || lower.includes("permission denied") || lower.includes("access denied")) return "上游拒绝访问当前模型或接口。";
+  if (lower.includes("not found") || lower.includes("model not found")) return "上游接口地址或模型名称不存在。";
+  if (lower.includes("quota") || lower.includes("balance") || lower.includes("insufficient")) return "上游额度不足或余额不足。";
+  if (lower.includes("safety") || lower.includes("policy") || lower.includes("blocked")) return "上游安全策略拦截了这次请求。";
+  return `上游返回英文错误：${raw}`;
 }
 
 function channelRoleLabel(role) {

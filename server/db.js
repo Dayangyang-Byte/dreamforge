@@ -536,6 +536,7 @@ export function getGenerationFailures({ limit = 200 } = {}) {
     upstreamSucceeded: Boolean(row.upstream_succeeded),
     pointsRefunded: Number(row.points_refunded || 0),
     error: row.error || "",
+    errorZh: translateAdminError(row.error || ""),
     input: safeJson(row.input_json, {}),
     createdAt: row.created_at
   }));
@@ -620,6 +621,7 @@ export function getGenerationRequests({ limit = 100 } = {}) {
     status: row.status || "pending",
     stage: row.stage || "",
     error: row.error || "",
+    errorZh: translateAdminError(row.error || ""),
     jobId: row.job_id || "",
     channelAttempts: normalizeChannelAttempts(safeJson(row.channel_attempts_json, [])),
     startedAt: row.started_at,
@@ -1836,10 +1838,40 @@ function normalizeChannelAttempts(value) {
     retryable: Boolean(item?.retryable),
     statusCode: Number(item?.statusCode || 0),
     error: String(item?.error || "").slice(0, 600),
+    errorZh: translateAdminError(item?.error || ""),
     startedAt: String(item?.startedAt || "").slice(0, 40),
     completedAt: String(item?.completedAt || "").slice(0, 40),
     durationMs: Number(item?.durationMs || 0)
   }));
+}
+
+function translateAdminError(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (/[\u3400-\u9fff]/.test(raw)) return raw;
+
+  const lower = raw.toLowerCase();
+  if (lower.includes("fetch failed")) return "连接上游接口失败，服务器无法建立请求。";
+  if (lower.includes("timeout") || lower.includes("timed out")) return "请求上游接口超时，未在规定时间内返回。";
+  if (lower.includes("no usable image") || lower.includes("no image")) return "上游没有返回可用图片。";
+  if (lower.includes("rate limit") || lower.includes("too many requests")) return "上游请求过多，触发了限流。";
+  if (lower.includes("unauthorized") || lower.includes("invalid api key") || lower.includes("invalid key")) {
+    return "上游 API Key 无效或未授权。";
+  }
+  if (lower.includes("forbidden") || lower.includes("permission denied") || lower.includes("access denied")) {
+    return "上游拒绝访问当前模型或接口。";
+  }
+  if (lower.includes("not found") || lower.includes("model not found")) return "上游接口地址或模型名称不存在。";
+  if (lower.includes("quota") || lower.includes("balance") || lower.includes("insufficient")) {
+    return "上游额度不足或余额不足。";
+  }
+  if (lower.includes("safety") || lower.includes("policy") || lower.includes("blocked")) {
+    return "上游安全策略拦截了这次请求。";
+  }
+  if (/\b(400|401|403|404|408|409|429|500|502|503|504)\b/.test(lower)) {
+    return `上游返回英文错误（${raw}）。`;
+  }
+  return `上游返回英文错误：${raw}`;
 }
 
 function safeJson(value, fallback) {
