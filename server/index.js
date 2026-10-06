@@ -4298,8 +4298,13 @@ async function generateGptImageSinglePrompt({ item, input, modelConfig, gptConfi
     const data = await generateGptImageViaEdits(item, input, activeModelConfig, apiBase, apiKey, size, quality, responseFormat);
     const imageUrl = extractImageUrl(data);
     if (!imageUrl) {
-      throw markGptImageError(new Error("GPT Image 2 没有返回可用图片"), {
+      const upstreamMessage = extractResponseFailureMessage(data);
+      const message = upstreamMessage
+        ? `GPT Image 2 没有返回可用图片，上游说明：${formatGptImageError(upstreamMessage, 200, hasReferences)}`
+        : "GPT Image 2 没有返回可用图片";
+      throw markGptImageError(new Error(message), {
         emptyImage: true,
+        rawMessage: upstreamMessage,
         apiBase,
         channel: gptConfig.channel
       });
@@ -4362,8 +4367,13 @@ async function generateGptImageSinglePrompt({ item, input, modelConfig, gptConfi
 
   const imageUrl = extractImageUrl(data);
   if (!imageUrl) {
-    throw markGptImageError(new Error("GPT Image 2 没有返回可用图片"), {
+    const upstreamMessage = extractResponseFailureMessage(data);
+    const message = upstreamMessage
+      ? `GPT Image 2 没有返回可用图片，上游说明：${formatGptImageError(upstreamMessage, 200, hasReferences)}`
+      : "GPT Image 2 没有返回可用图片";
+    throw markGptImageError(new Error(message), {
       emptyImage: true,
+      rawMessage: upstreamMessage,
       apiBase,
       channel: gptConfig.channel
     });
@@ -4505,6 +4515,11 @@ function shouldFallbackGptImageError(error) {
     text.includes("insufficient") ||
     text.includes("rate limit") ||
     text.includes("too many requests") ||
+    text.includes("速率限制") ||
+    text.includes("请求过多") ||
+    text.includes("请求过于频繁") ||
+    text.includes("触发了限流") ||
+    text.includes("限流") ||
     text.includes("temporarily unavailable") ||
     text.includes("upstream request failed") ||
     text.includes("没有返回可用图片")
@@ -5051,7 +5066,16 @@ function formatGptImageError(message, status = 0, hasReferences = false) {
     return "GPT Image 2 API Key 配置异常，请联系管理员检查服务器配置。你的积分没有被扣除。";
   }
 
-  if (status === 429 || lower.includes("rate limit") || lower.includes("too many requests")) {
+  if (
+    status === 429 ||
+    lower.includes("rate limit") ||
+    lower.includes("too many requests") ||
+    raw.includes("速率限制") ||
+    raw.includes("请求过多") ||
+    raw.includes("请求过于频繁") ||
+    raw.includes("触发了限流") ||
+    raw.includes("限流")
+  ) {
     return "GPT Image 2 当前请求过多，请稍后重试。你的积分没有被扣除。";
   }
 
@@ -5231,6 +5255,26 @@ function parseDataImage(value) {
     extension,
     buffer: Buffer.from(match[2].replace(/\s+/g, ""), "base64")
   };
+}
+
+function extractResponseFailureMessage(data) {
+  if (!data || typeof data !== "object") return "";
+  const candidates = [
+    data.error?.message,
+    data.error,
+    data.message,
+    data.detail,
+    data.reason,
+    data.status?.message,
+    data.output_text,
+    data.choices?.[0]?.message?.content
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string") continue;
+    const text = candidate.trim();
+    if (text && text.length <= 1200) return text;
+  }
+  return "";
 }
 
 function extractImageUrl(data, seen = new Set()) {
