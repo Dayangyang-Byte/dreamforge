@@ -999,9 +999,24 @@ app.post("/api/generate", async (req, res) => {
         console.warn("generation failure record failed:", recordError.message);
       }
     }
-    res.status(400).json({ error: error.message || "生成失败" });
+    res.status(400).json({ error: publicGenerateErrorMessage(error) });
   }
 });
+
+// 用户侧错误脱敏：内部渠道报错（含渠道 URL、API key、guard 信息）不外泄给终端用户，统一通用话术；
+// 面向用户的错误（内容政策/积分不足/提示词/超时）保留原文。完整明细仍写入 generation_requests/generation_failures，后台可查。
+function publicGenerateErrorMessage(error) {
+  const message = String(error?.message || error || "").trim();
+  const sensitive =
+    /https?:\/\//i.test(message) ||
+    /API[ _-]?Key|API Base URL|routing guard|接口|fetch failed|ECONN|ETIMEDOUT|ENOTFOUND|request failed with \d{3}/i.test(
+      message
+    );
+  if (sensitive) {
+    return "图片生成失败，请稍后重试；若多次失败，请简化提示词或更换参考图再试。";
+  }
+  return message || "生成失败";
+}
 
 function publicModels() {
   return Object.values(modelRegistry).map(({ id, label, provider, model, creditCost, qualityOptions }) => ({
