@@ -1,0 +1,80 @@
+/* ============================================================
+   P1-UX：生成结果体验提速
+   1) 生成中骨架卡（流光占位 + 已等待秒数）
+   2) 缩略图秒开 + 全尺寸图后台淡入覆盖
+   3) 失败状态卡（不留旧图）
+   ============================================================ */
+
+/* 生成中：spinner 旋转 */
+.generating-spin {
+  animation: p1ux-spin 0.9s linear infinite;
+}
+@keyframes p1ux-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 生成中行：次要文字 */
+.result-sheet.generating-sheet .generating-line,
+.result-sheet.failed-sheet .generating-line {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: rgba(200, 210, 235, 0.72);
+  font-weight: 400;
+}
+.result-sheet.generating-sheet .result-header h2 {
+  margin-bottom: 2px;
+}
+
+/* 失败卡 */
+.result-sheet.failed-sheet .error-text {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+}
+
+/* 骨架卡：流光占位 */
+.result-card.skeleton-card {
+  position: relative;
+  min-height: 240px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+.result-card.skeleton-card .skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(167, 139, 250, 0) 30%,
+    rgba(167, 139, 250, 0.18) 50%,
+    rgba(56, 189, 248, 0.18) 60%,
+    rgba(56, 189, 248, 0) 80%
+  );
+  background-size: 220% 100%;
+  animation: p1ux-shimmer 1.4s linear infinite;
+}
+@keyframes p1ux-shimmer {
+  from { background-position: 220% 0; }
+  to { background-position: -100% 0; }
+}
+
+/* 结果卡：全尺寸图绝对定位覆盖在缩略图上，加载完淡入（与原图同 contain 对齐，不跳变） */
+.result-card {
+  position: relative;
+}
+.result-card .result-full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.24);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+/* 尊重"减少动态效果"：关掉流光和 spinner 旋转 */
+@media (prefers-reduced-motion: reduce) {
+  .result-card.skeleton-card .skeleton-shimmer,
+  .generating-spin {
+    animation: none;
+  }
+}

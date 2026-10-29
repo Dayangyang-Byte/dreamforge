@@ -26,6 +26,7 @@ import { AdminApp } from "./Admin.jsx";
 import "./styles.css";
 import "./uiverse-components.css";
 import "./neon-effects.css";
+import "./result-ux.css";
 
 if (window.location.pathname.startsWith("/admin")) {
   createRoot(document.getElementById("root")).render(<AdminApp />);
@@ -34,6 +35,15 @@ if (window.location.pathname.startsWith("/admin")) {
 }
 
 const apiBase = import.meta.env.VITE_API_BASE || "";
+
+/* P1-UX: 图片绝对地址。后端返回 /generated/... 相对路径，直接 <img> 会落到前端
+   域名（Vercel 代理大二进制很慢），拼上 apiBase 直连 VPS，历史记录的旧 URL 一并兼容 */
+function toAbsoluteImage(url) {
+  if (!url) return url;
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
+  if (!apiBase) return url;
+  return `${apiBase.replace(/\/+$/, "")}${url.startsWith("/") ? "" : "/"}${url}`;
+}
 const trackedPaidOrders = new Set();
 function trackEvent(name, params = {}) {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
@@ -296,6 +306,9 @@ const uiText = {
     referenceIntel: "生成时会先自动识别每张参考图的用途，再和你的提示词合成新图。",
     templateGuidance: "提示词明确可直接生成；没思路时再选创作模板探索随机效果。不会写请联系客服。",
     resultTitle: "生成结果",
+    generating: "生成中",
+    generatingHint: "通常需要 30-90 秒，完成后自动显示在这里，不用去历史里找",
+    generationFailed: "本次生成没有出图。可以稍后重试，或先看历史记录里已完成的图。",
     deducted: "已扣",
     remaining: "剩余",
     referenceCountSuffix: "张参考图",
@@ -404,6 +417,9 @@ const uiText = {
     referenceIntel: "Reference images are analyzed first, then combined with your prompt.",
     templateGuidance: "If your prompt is clear, use Custom. If you need inspiration, choose a template. Contact support if unsure.",
     resultTitle: "Result",
+    generating: "Generating",
+    generatingHint: "Usually takes 30-90 seconds. Results appear here automatically - no need to check history.",
+    generationFailed: "No image was generated this time. You can retry later or check history for finished images.",
     deducted: "used",
     remaining: "remaining",
     referenceCountSuffix: "reference image(s)",
@@ -1713,6 +1729,10 @@ function App() {
   const [historyImageStatus, setHistoryImageStatus] = useState({});
   const [historyPreview, setHistoryPreview] = useState(null);
   const [downloadingImageId, setDownloadingImageId] = useState("");
+  /* P1-UX: 生成中计时 + 全尺寸图淡入状态 */
+  const [generatingSince, setGeneratingSince] = useState(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [fullImageLoaded, setFullImageLoaded] = useState({});
   const [policyOpen, setPolicyOpen] = useState(null);
   const [reportForm, setReportForm] = useState({ type: "违法违规内容", contact: "", content: "" });
   const [reportMessage, setReportMessage] = useState("");
@@ -1797,6 +1817,41 @@ function App() {
     document.addEventListener("pointerdown", closeTemplateMenu);
     return () => document.removeEventListener("pointerdown", closeTemplateMenu);
   }, [templateMenuOpen]);
+
+  /* P1-UX: 生成中每秒刷新已等待秒数 */
+  useEffect(() => {
+    if (!loading || !generatingSince) return undefined;
+    const tick = () => setElapsedSeconds(Math.max(0, Math.round((Date.now() - generatingSince) / 1000)));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [loading, generatingSince]);
+
+  /* P1-UX: ?demo=generating|result|failed 演示三种结果区状态（验收用，生产不触发） */
+  useEffect(() => {
+    const demo = new URLSearchParams(window.location.search).get("demo");
+    if (!demo) return;
+    const overlay = document.querySelector(".auth-overlay");
+    if (overlay) overlay.style.display = "none";
+    const demoImage = "https://api.mengjing233.cn/generated/2026-08-12/573a6923.png";
+    const demoJob = {
+      id: "demo-job",
+      creditCost: 3,
+      remainingCredits: 12,
+      input: { model: "gpt-image-1k", ratio: "1:1", references: [] },
+      images: [{ id: "demo-img-1", url: demoImage, thumbnailUrl: demoImage }],
+    };
+    if (demo === "generating") {
+      setJob(null);
+      setGeneratingSince(Date.now());
+      setLoading(true);
+    } else if (demo === "result") {
+      setJob(demoJob);
+    } else if (demo === "failed") {
+      setJob(null);
+      setError("上游服务返回 401: 通道鉴权失败，请稍后重试");
+    }
+  }, []);
 
   useEffect(() => {
     if (!token || !rechargeOrder?.id || !["created", "pending"].includes(rechargeOrder.status)) return undefined;
@@ -1928,6 +1983,12 @@ function App() {
     setLoading(true);
     setError("");
     setRedeemMessage("");
+    /* P1-UX: 立即清掉旧结果并显示"生成中"，避免主界面残留上一张图 */
+    setJob(null);
+    setActiveImage(0);
+    setFullImageLoaded({});
+    setGeneratingSince(Date.now());
+    setElapsedSeconds(0);
 
     try {
       const effectiveRatio = getEffectiveRatio(form);
@@ -1951,7 +2012,9 @@ function App() {
       loadHistory(token);
       trackEvent("generate_image", { model: submitForm.model || "unknown" });
     } catch (err) {
+      /* P1-UX: 失败时不留旧图，错误文案 + "查看历史记录"入口见结果区 */
       setError(err.message);
+      setJob(null);
     } finally {
       setLoading(false);
     }
@@ -2569,6 +2632,40 @@ function App() {
         </div>
       </section>
 
+      {loading && !job?.images?.length ? (
+        <section className="result-sheet generating-sheet" aria-busy="true">
+          <div className="result-header">
+            <div>
+              <h2>{t("resultTitle")}</h2>
+              <p className="generating-line">
+                <Loader2 size={14} className="generating-spin" />
+                {t("generating")} {elapsedSeconds}s · {t("generatingHint")}
+              </p>
+            </div>
+          </div>
+          <div className="result-grid">
+            <div className="result-card skeleton-card" aria-hidden="true">
+              <span className="skeleton-shimmer" />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {!loading && !job?.images?.length && error ? (
+        <section className="result-sheet failed-sheet">
+          <div className="result-header">
+            <div>
+              <h2>{t("resultTitle")}</h2>
+              <p className="error-text">{error}</p>
+              <p className="generating-line">{t("generationFailed")}</p>
+            </div>
+            <button className="download-button" type="button" onClick={() => openMember("history")}>
+              {t("historyTab")}
+            </button>
+          </div>
+        </section>
+      ) : null}
+
       {job?.images?.length ? (
         <section className="result-sheet">
           <div className="result-header">
@@ -2581,10 +2678,10 @@ function App() {
             <div className="result-toolbar" aria-label={t("resultTitle")}>
               {activeImageMeta && <span>{activeImageMeta}</span>}
               <span>{job.input?.ratio || "1:1"}</span>
-              {job.input?.gptQuality && <span>{qualityLabel(job.input.gptQuality, language)}</span>}
+              {job.input?.gptQuality && <span>{qualityLabel(job.input?.gptQuality, language)}</span>}
               <span>{job.input?.references?.length || 0} {t("referenceCountSuffix")}</span>
               {activeImageData && (
-                <button className="download-button" type="button" onClick={() => downloadImage(activeImageData.url, `${job.id}_${activeImage + 1}.png`, activeImageData.id)} disabled={downloadingImageId === activeImageData.id}>
+                <button className="download-button" type="button" onClick={() => downloadImage(toAbsoluteImage(activeImageData.url), `${job.id}_${activeImage + 1}.png`, activeImageData.id)} disabled={downloadingImageId === activeImageData.id}>
                   <Download size={18} />
                   {t("download")}
                 </button>
@@ -2606,7 +2703,17 @@ function App() {
                 key={image.id}
                 onClick={() => setActiveImage(index)}
               >
-                <img src={image.url} alt={t("resultTitle")} />
+                {/* P1-UX: 先秒开 360px 缩略图，全尺寸图后台加载完淡入覆盖 */}
+                <img src={toAbsoluteImage(image.thumbnailUrl || image.url)} loading="lazy" alt={t("resultTitle")} />
+                {activeImage === index && (
+                  <img
+                    className="result-full"
+                    src={toAbsoluteImage(image.url)}
+                    alt=""
+                    onLoad={() => setFullImageLoaded((s) => (s[image.id] ? s : { ...s, [image.id]: true }))}
+                    style={{ opacity: fullImageLoaded[image.id] ? 1 : 0 }}
+                  />
+                )}
               </button>
             ))}
           </div>
@@ -2915,7 +3022,7 @@ function App() {
                             title={t("previewImage")}
                           >
                             <img
-                              src={item.thumbnailUrl || item.url}
+                              src={toAbsoluteImage(item.thumbnailUrl || item.url)}
                               alt={t("historyImageAlt")}
                               loading="lazy"
                               decoding="async"
@@ -3008,13 +3115,13 @@ function App() {
                 {t("close")}
               </button>
             </div>
-            <img src={historyPreview.url} alt={t("historyPreviewAlt")} />
+            <img src={toAbsoluteImage(historyPreview.url)} alt={t("historyPreviewAlt")} />
             <div className="history-preview-actions">
               <button
                 type="button"
                 onClick={() =>
                   downloadImage(
-                    historyPreview.url,
+                    toAbsoluteImage(historyPreview.url),
                     `${historyPreview.jobId}_${historyPreview.imageIndex + 1}.png`,
                     historyPreview.id
                   )
