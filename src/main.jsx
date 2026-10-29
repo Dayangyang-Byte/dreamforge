@@ -1833,7 +1833,7 @@ function App() {
     if (!demo) return;
     const overlay = document.querySelector(".auth-overlay");
     if (overlay) overlay.style.display = "none";
-    const demoImage = "https://api.mengjing233.cn/generated/2026-08-12/573a6923.png";
+    const demoImage = "https://api.mengjing233.cn/generated/job_20261029085244_1_1826b1f4c07c.png";
     const demoJob = {
       id: "demo-job",
       creditCost: 3,
