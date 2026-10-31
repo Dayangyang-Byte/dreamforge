@@ -33,4 +33,4 @@ Allow: /
 # Crawl delay to avoid overloading server
 Crawl-delay: 5
 
-Sitemap: https://mengjing233.cn/sitemap.xml
+Sitemap: https://www.mengjing233.cn/sitemap.xml

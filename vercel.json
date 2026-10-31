@@ -7,7 +7,7 @@
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "dreamforge-679j.vercel.app" }],
-      "destination": "https://mengjing233.cn/$1",
+      "destination": "https://www.mengjing233.cn/$1",
       "permanent": true
     }
   ],
