@@ -44,9 +44,10 @@
     body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; line-height: 1.75; }
     .container { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
     h1 { font-size: 2.3rem; margin-bottom: 12px; background: linear-gradient(135deg, #a855f7, #3b82f6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.3; }
-    .subtitle { color: #888; margin-bottom: 32px; font-size: 1.05rem; }
+    .subtitle { color: #888; margin-bottom: 8px; font-size: 1.05rem; }
     h2 { color: #a855f7; font-size: 1.25rem; margin: 0 0 10px; }
-    time { display: block; color: #888; font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .meta time { color: #888; font-size: 0.9rem; font-weight: 600; }
     p { color: #b8b8c8; margin-bottom: 14px; }
     ul { margin: 8px 0 0 20px; }
     li { color: #b8b8c8; margin-bottom: 6px; }
@@ -55,7 +56,7 @@
     .back-link { display: inline-block; margin-bottom: 30px; color: #888; text-decoration: none; }
     .back-link:hover { color: #a855f7; }
     .entry { background: #151520; border: 1px solid #2a2a3a; border-left: 3px solid #a855f7; border-radius: 10px; padding: 20px 22px; margin-bottom: 18px; }
-    .tag { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; margin-left: 6px; vertical-align: middle; background: #1a1a2e; color: #a5b4fc; border: 1px solid #2a2a3a; }
+    .tag { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; line-height: 1.6; background: #1a1a2e; color: #a5b4fc; border: 1px solid #2a2a3a; }
     .note { color: #777; font-size: 0.88rem; }
     .related { margin-top: 40px; padding: 24px; background: #151520; border: 1px solid #2a2a3a; border-radius: 12px; }
     .related h2 { margin-bottom: 12px; }
@@ -73,12 +74,12 @@
     <p class="subtitle">每一次功能迭代与修复，按时间倒序 · 最后更新于 2026-11-01</p>
     <p class="note">新版本记录加在最上方。只记录已上线的改动。</p>
 
-    <!-- 维护说明：新条目复制一个 <article class="entry"> 加在最上面，同时更新 subtitle、Article schema 的 dateModified、sitemap 中 /updates 的 lastmod。每条注释里写对应 commit。 -->
+    <!-- 维护说明：新条目复制一个 .entry 块加在最上面（日期写进 .meta 的 <time datetime>，标签写进 .meta 的 <span class="tag">，不要放进 h2），同时更新 subtitle、Article schema 的 dateModified、sitemap 中 /updates 的 lastmod。注释里记对应 commit。 -->
 
     <!-- commits: 6eb73b2, 88aeea9 -->
     <article class="entry">
-      <time datetime="2026-10-31">2026-10-31</time>
-      <h2>新增国产 AI 绘画工具对比指南<span class="tag">内容</span></h2>
+      <div class="meta"><time datetime="2026-10-31">2026-10-31</time><span class="tag">内容</span></div>
+      <h2>新增国产 AI 绘画工具对比指南</h2>
       <ul>
         <li>新增 <a href="/guide/chinese-ai-design-tools">2026 国产 AI 绘画工具对比</a>：即梦、可灵、通义万相、LiblibAI、腾讯混元与梦境AI 的侧重点、付费模式与适合人群。</li>
         <li>全站链接统一到主域名 www.mengjing233.cn。</li>
@@ -87,8 +88,8 @@
 
     <!-- commits: b108970, 3b25afe -->
     <article class="entry">
-      <time datetime="2026-10-29">2026-10-29</time>
-      <h2>生成结果区体验优化<span class="tag">体验</span></h2>
+      <div class="meta"><time datetime="2026-10-29">2026-10-29</time><span class="tag">体验</span></div>
+      <h2>生成结果区体验优化</h2>
       <ul>
         <li>生成过程中显示占位卡片，不再出现空白等待。</li>
         <li>生成完成后历史记录自动刷新。</li>
@@ -99,8 +100,8 @@
 
     <!-- commit: 6f12164 -->
     <article class="entry">
-      <time datetime="2026-10-14">2026-10-14</time>
-      <h2>定价信息全站统一<span class="tag">修正</span></h2>
+      <div class="meta"><time datetime="2026-10-14">2026-10-14</time><span class="tag">修正</span></div>
+      <h2>定价信息全站统一</h2>
       <ul>
         <li>各页面展示的积分定价与实际计费保持一致。</li>
         <li>移除页面中没有依据的评分数据。</li>
@@ -109,8 +110,8 @@
 
     <!-- commits: c856378, f46f403, 05d4fee -->
     <article class="entry">
-      <time datetime="2026-10-11">2026-10-06 – 10-11</time>
-      <h2>生成失败提示更清楚<span class="tag">体验</span></h2>
+      <div class="meta"><time datetime="2026-10-06">2026-10-06 – 10-11</time><span class="tag">体验</span></div>
+      <h2>生成失败提示更清楚</h2>
       <ul>
         <li>生成失败时显示翻译后的具体原因，方便判断是提示词问题还是暂时性故障。</li>
         <li>改进备用通道的切换判断。</li>
@@ -120,8 +121,8 @@
 
     <!-- commits: a298fab, 79eb640 -->
     <article class="entry">
-      <time datetime="2026-09-23">2026-09-14 – 09-23</time>
-      <h2>品牌说明：认准 mengjing233.cn<span class="tag">品牌</span></h2>
+      <div class="meta"><time datetime="2026-09-14">2026-09-14 – 09-23</time><span class="tag">品牌</span></div>
+      <h2>品牌说明：认准 mengjing233.cn</h2>
       <ul>
         <li>梦境AI（DreamForge）官网为 mengjing233.cn。网上同名的 dreamforge.top（“梦幻工坊”）和本地买断制 DreamForge 桌面软件与本产品无关。</li>
       </ul>
@@ -129,8 +130,8 @@
 
     <!-- commit: e7d2c52 -->
     <article class="entry">
-      <time datetime="2026-09-13">2026-09-13</time>
-      <h2>修复分享卡片图片<span class="tag">修复</span></h2>
+      <div class="meta"><time datetime="2026-09-13">2026-09-13</time><span class="tag">修复</span></div>
+      <h2>修复分享卡片图片</h2>
       <ul>
         <li>链接分享到社交平台时，预览图和站点图标正常显示（此前返回的是网页而非图片）。</li>
       </ul>
@@ -138,8 +139,8 @@
 
     <!-- commits: 07eb07c, 456f5c7 -->
     <article class="entry">
-      <time datetime="2026-09-12">2026-09-12</time>
-      <h2>Forge 生图继续免费<span class="tag">定价</span></h2>
+      <div class="meta"><time datetime="2026-09-12">2026-09-12</time><span class="tag">定价</span></div>
+      <h2>Forge 生图继续免费</h2>
       <ul>
         <li>Forge 生图渠道维持 0 积分免费。</li>
         <li>提示词安全检测按类别重新整理。</li>
@@ -148,8 +149,8 @@
 
     <!-- commit: 5a538ed -->
     <article class="entry">
-      <time datetime="2026-09-11">2026-09-11</time>
-      <h2>5 篇场景指南上线<span class="tag">内容</span></h2>
+      <div class="meta"><time datetime="2026-09-11">2026-09-11</time><span class="tag">内容</span></div>
+      <h2>5 篇场景指南上线</h2>
       <ul>
         <li><a href="/guide/prompt-tips">AI 绘画提示词 5 个技巧</a></li>
         <li><a href="/guide/dreamforge-vs-midjourney">梦境AI vs Midjourney</a></li>
@@ -161,8 +162,8 @@
 
     <!-- commits: bfe0ef4, c5b0089 -->
     <article class="entry">
-      <time datetime="2026-09-09">2026-09-09</time>
-      <h2>免费 Forge 模型升级到 Agnes Image 2.5<span class="tag">模型</span></h2>
+      <div class="meta"><time datetime="2026-09-09">2026-09-09</time><span class="tag">模型</span></div>
+      <h2>免费 Forge 模型升级到 Agnes Image 2.5</h2>
       <ul>
         <li>Forge 免费生图渠道的模型从 Agnes Image 2.1 升级为 2.5。</li>
         <li>上线 <a href="/guide">梦境AI 使用指南</a>：使用场景、功能、定价与常见问题。</li>
@@ -171,18 +172,18 @@
 
     <!-- commits: d6ae355, 67708d8 -->
     <article class="entry">
-      <time datetime="2026-09-04">2026-09-04</time>
-      <h2>首页文案与品牌标识更新<span class="tag">品牌</span></h2>
+      <div class="meta"><time datetime="2026-09-04">2026-09-04</time><span class="tag">品牌</span></div>
+      <h2>首页文案与品牌标识更新</h2>
       <ul>
         <li>中文界面显示“梦境AI”，英文界面显示“DreamForge”。</li>
         <li>首页介绍文案更新。</li>
       </ul>
     </article>
 
-    <!-- commit: c3f3ef5, 136aaf3 -->
+    <!-- commits: c3f3ef5, 136aaf3 -->
     <article class="entry">
-      <time datetime="2026-08-29">2026-08-29</time>
-      <h2>账号与图片安全加固<span class="tag">安全</span></h2>
+      <div class="meta"><time datetime="2026-08-29">2026-08-29</time><span class="tag">安全</span></div>
+      <h2>账号与图片安全加固</h2>
       <ul>
         <li>注册、后台、举报接口增加频率限制。</li>
         <li>生成图片的地址无法被批量猜测访问。</li>
@@ -193,8 +194,8 @@
 
     <!-- commits: 3664968, 367ef77 -->
     <article class="entry">
-      <time datetime="2026-08-28">2026-08-28</time>
-      <h2>新用户欢迎提示<span class="tag">体验</span></h2>
+      <div class="meta"><time datetime="2026-08-28">2026-08-28</time><span class="tag">体验</span></div>
+      <h2>新用户欢迎提示</h2>
       <ul>
         <li>注册成功后弹窗提示已到账的赠送积分。</li>
         <li>修复注册提交时偶发的崩溃。</li>
@@ -203,8 +204,8 @@
 
     <!-- commits: 82e436a, d477ad1, 273fff6 -->
     <article class="entry">
-      <time datetime="2026-08-27">2026-08-27</time>
-      <h2>新用户送 2 积分 + 提示词库上线<span class="tag">新功能</span></h2>
+      <div class="meta"><time datetime="2026-08-27">2026-08-27</time><span class="tag">新功能</span></div>
+      <h2>新用户送 2 积分 + 提示词库上线</h2>
       <ul>
         <li>新用户注册自动赠送 2 积分；同一 IP 最多注册 3 个账号。</li>
         <li>修复注册后赠送积分未保存的问题。</li>
@@ -214,8 +215,8 @@
 
     <!-- commits: 09bdd45, 282d305 -->
     <article class="entry">
-      <time datetime="2026-08-23">2026-08-23</time>
-      <h2>中文常见问题与提示词教程上线<span class="tag">内容</span></h2>
+      <div class="meta"><time datetime="2026-08-23">2026-08-23</time><span class="tag">内容</span></div>
+      <h2>中文常见问题与提示词教程上线</h2>
       <ul>
         <li>上线 <a href="/zh/faq">中文常见问题</a> 与 <a href="/zh/prompts">中文提示词教程</a>。</li>
       </ul>
