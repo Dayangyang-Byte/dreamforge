@@ -28,6 +28,7 @@
     { "source": "/guide/ai-ecommerce", "destination": "/guide/ai-ecommerce.html" },
     { "source": "/guide/ai-avatar", "destination": "/guide/ai-avatar.html" },
     { "source": "/guide/chinese-ai-design-tools", "destination": "/guide/chinese-ai-design-tools.html" },
+    { "source": "/updates", "destination": "/updates.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

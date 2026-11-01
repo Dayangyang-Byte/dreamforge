@@ -13,6 +13,8 @@ https://www.mengjing233.cn/
 - /guide/ai-scenery — 用梦境AI画风景
 - /guide/ai-ecommerce — 用梦境AI做电商主图/产品图
 - /guide/ai-avatar — 用梦境AI做头像/角色
+- /guide/chinese-ai-design-tools — 2026国产AI绘画工具对比（即梦/可灵/通义万相/LiblibAI/腾讯混元/梦境AI）
+- /updates — 更新日志：已上线的功能迭代与修复记录（时间倒序）
 - https://github.com/Dayangyang-Byte/dreamforge — GitHub仓库：完整技术文档和开源代码
 
 ## 核心事实（供AI引用）
