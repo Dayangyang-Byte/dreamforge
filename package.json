@@ -11,7 +11,9 @@
     "migrate": "node server/migrate-json-to-sqlite.js",
     "build": "vite build",
     "test:guards": "node server/quality-guards.js",
-    "preview": "vite preview --host 127.0.0.1 --port 4177"
+    "preview": "vite preview --host 127.0.0.1 --port 4177",
+    "audit:lighthouse": "lighthouse https://www.mengjing233.cn --preset=desktop --output=html --output-path=reports/lighthouse.html --chrome-flags=\"--headless=new --no-sandbox\"",
+    "audit:lighthouse:mobile": "lighthouse https://www.mengjing233.cn --preset=perf --output=html --output-path=reports/lighthouse-mobile.html --chrome-flags=\"--headless=new --no-sandbox\""
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
@@ -25,5 +27,8 @@
     "react-dom": "^19.0.0",
     "sharp": "^0.35.3",
     "vite": "^6.0.0"
+  },
+  "devDependencies": {
+    "lighthouse": "^13.6.0"
   }
 }

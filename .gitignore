@@ -11,3 +11,4 @@ image-gen-studio-*.zip
 *.zip
 .DS_Store
 Thumbs.db
+reports/
