@@ -23,7 +23,7 @@
     "description": "梦境AI 功能迭代与修复记录，按时间倒序。",
     "inLanguage": "zh-CN",
     "datePublished": "2026-11-01",
-    "dateModified": "2026-11-01",
+    "dateModified": "2026-11-07",
     "image": "https://www.mengjing233.cn/og-image.jpg",
     "author": { "@type": "Organization", "name": "梦境AI（DreamForge）", "url": "https://www.mengjing233.cn/" },
     "publisher": { "@type": "Organization", "name": "梦境AI（DreamForge）", "url": "https://www.mengjing233.cn/" }
@@ -71,10 +71,20 @@
     <a href="/" class="back-link">← 返回梦境AI 工具</a>
 
     <h1>梦境AI 更新日志</h1>
-    <p class="subtitle">每一次功能迭代与修复，按时间倒序 · 最后更新于 2026-11-01</p>
+    <p class="subtitle">每一次功能迭代与修复，按时间倒序 · 最后更新于 2026-11-07</p>
     <p class="note">新版本记录加在最上方。只记录已上线的改动。</p>
 
     <!-- 维护说明：新条目复制一个 .entry 块加在最上面（日期写进 .meta 的 <time datetime>，标签写进 .meta 的 <span class="tag">，不要放进 h2），同时更新 subtitle、Article schema 的 dateModified、sitemap 中 /updates 的 lastmod。注释里记对应 commit。 -->
+
+    <!-- commits: 23a3384 -->
+    <article class="entry">
+      <div class="meta"><time datetime="2026-11-07">2026-11-07</time><span class="tag">修正</span></div>
+      <h2>修复 Forge 免费通道中文出图跑偏</h2>
+      <ul>
+        <li>Forge（Agnes Image 2.5-flash）现在在发图前会自动把中文提示词翻译成英文，解决之前用中文指令生成时会"跑题"的问题。</li>
+        <li>翻译失败会回落原文继续尝试，不会阻塞出图。</li>
+      </ul>
+    </article>
 
     <!-- commits: 6eb73b2, 88aeea9 -->
     <article class="entry">
