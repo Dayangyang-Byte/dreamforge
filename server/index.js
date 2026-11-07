@@ -3692,6 +3692,43 @@ async function generateImages(prompts, input, modelConfig, context = {}) {
   return prompts.map((item, index) => makeMockImage(item, input, index, modelConfig));
 }
 
+// Agnes 图像模型对中文指令理解不可靠（实测：中文跑偏、英文精准）。
+// 发图前用 Agnes 文本模型把含中文的指令翻译成英文提示词；翻译失败回落原文（不阻塞出图）。
+// 环境变量 AGNES_CHINESE_PROMPT_TRANSLATE=off 可整体关闭。
+function hasCjk(text = "") {
+  const matches = String(text || "").match(/[\u3400-\u4dbf\u4e00-\u9fff]/g);
+  return (matches ? matches.length : 0) >= 4;
+}
+
+async function translateAgnesPrompt(key, promptText) {
+  const model = process.env.AGNES_PROMPT_TRANSLATION_MODEL || "agnes-3.0-flash";
+  const response = await fetch("https://apihub.agnes-ai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.2,
+      max_tokens: 800,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You convert Chinese image-generation instructions into English prompts for an English-optimized image model. Preserve every scene element, subject, style, lighting, composition, and any text that must appear in the image. Do not add new subjects or change the intended scene. Output only the English prompt, no preamble."
+        },
+        { role: "user", content: String(promptText || "") }
+      ]
+    })
+  });
+  if (!response.ok) throw new Error(`prompt translation HTTP ${response.status}`);
+  const data = await response.json();
+  const translated = String(data.choices?.[0]?.message?.content || "").trim();
+  if (translated.length < 10) throw new Error("empty prompt translation");
+  return translated;
+}
+
 async function generateWithAgnes(prompts, input, modelConfig) {
   const apiKey = process.env.AGNES_API_KEY || process.env.AGNES_TOKEN;
   if (!apiKey) {
@@ -3706,11 +3743,22 @@ async function generateWithAgnes(prompts, input, modelConfig) {
   for (const [index, item] of prompts.entries()) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60_000);
+    let agnesPrompt = agnesEditReminder
+      ? `${item.prompt}\n\nFinal Agnes instruction: Do not copy the uploaded reference image as-is. Complete the requested edit visibly.`
+      : item.prompt;
+    if (
+      String(process.env.AGNES_CHINESE_PROMPT_TRANSLATE || "on").toLowerCase() !== "off" &&
+      hasCjk(agnesPrompt)
+    ) {
+      try {
+        agnesPrompt = await translateAgnesPrompt(apiKey, agnesPrompt);
+      } catch (error) {
+        console.warn("Agnes 中文提示词翻译失败，按原文发送:", error.message);
+      }
+    }
     const payload = {
       model: modelConfig.model,
-      prompt: agnesEditReminder
-        ? `${item.prompt}\n\nFinal Agnes instruction: Do not copy the uploaded reference image as-is. Complete the requested edit visibly.`
-        : item.prompt,
+      prompt: agnesPrompt,
       size,
       extra_body: { response_format: "url" }
     };
