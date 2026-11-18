@@ -195,6 +195,7 @@ app.get("/api/announcements", (_req, res) => {
 app.post("/api/auth/register", async (req, res) => {
   try {
     req.auditAction = "register";
+    const WELCOME_CREDITS = 4; // 新用户注册赠送（代码/账本/响应/前端弹窗 的同步点，改这里一处生效）
     const account = normalizeAccount(req.body.account);
     const password = String(req.body.password || "");
     if (!account) throw new Error("请输入邮箱");
@@ -217,7 +218,7 @@ app.post("/api/auth/register", async (req, res) => {
     users.accounts[account] = {
       account,
       passwordHash: hashPassword(password),
-      credits: 4, // 新用户注册赠送4积分
+      credits: WELCOME_CREDITS,
       token,
       tokenIssuedAt: now,
       createdAt: now,
@@ -231,7 +232,7 @@ app.post("/api/auth/register", async (req, res) => {
     // 记录赠送积分账本
     insertCreditLog(account, {
       type: "welcome",
-      credits: 4,
+      credits: WELCOME_CREDITS,
       cost: 0,
       code: "new-user-welcome",
       model: "",
@@ -246,7 +247,7 @@ app.post("/api/auth/register", async (req, res) => {
     res.json({
       token,
       user: publicUser(users.accounts[account]),
-      welcomeCredits: 2
+      welcomeCredits: WELCOME_CREDITS
     });
   } catch (error) {
     res.status(400).json({ error: error.message || "注册失败" });
