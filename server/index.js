@@ -1479,22 +1479,34 @@ function getDesignerBrainConfig() {
   };
 }
 
-// 内容审核通道选择：优先 GPT 文本（判定更强），无 key 时降级 Agnes 文本（agnes-3.0-flash），都无则跳过（fail-open）。
+// 内容审核通道选择：默认 Agnes 优先（本站基础设施已验证可用、贴合 Agnes 生图链路）；
+// GPT 文本通道需显式开启（FORGE_CONTENT_REVIEW_PROVIDER=gpt），可用 FORGE_CONTENT_REVIEW_MODEL 覆盖模型名。
 function getContentReviewChannel() {
+  const force = clean(process.env.FORGE_CONTENT_REVIEW_PROVIDER || "").toLowerCase();
   const gpt = getDesignerBrainConfig();
-  if (gpt.apiKey) {
-    return { provider: "gpt-text", apiBase: gpt.apiBase, apiKey: gpt.apiKey, model: gpt.model };
-  }
+  const gptChannel = gpt.apiKey
+    ? {
+        provider: "gpt-text",
+        apiBase: gpt.apiBase,
+        apiKey: gpt.apiKey,
+        model: process.env.FORGE_CONTENT_REVIEW_MODEL || gpt.model
+      }
+    : null;
   const agnesKey = process.env.AGNES_API_KEY || process.env.AGNES_TOKEN;
-  if (agnesKey) {
-    return {
-      provider: "agnes",
-      apiBase: "https://apihub.agnes-ai.com/v1",
-      apiKey: agnesKey,
-      model: process.env.AGNES_PROMPT_TRANSLATION_MODEL || "agnes-3.0-flash"
-    };
-  }
-  return null;
+  const agnesChannel = agnesKey
+    ? {
+        provider: "agnes",
+        apiBase: "https://apihub.agnes-ai.com/v1",
+        apiKey: agnesKey,
+        model:
+          process.env.FORGE_CONTENT_REVIEW_MODEL ||
+          process.env.AGNES_PROMPT_TRANSLATION_MODEL ||
+          "agnes-3.0-flash"
+      }
+    : null;
+  if (force === "gpt" && gptChannel) return gptChannel;
+  if (force === "agnes" && agnesChannel) return agnesChannel;
+  return agnesChannel || gptChannel;
 }
 
 // Forge 通道专属内容审核（语义层）：在静态敏感词表（checkPromptSafety）之后、扣积分之前运行，
