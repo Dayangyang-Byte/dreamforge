@@ -217,7 +217,7 @@ app.post("/api/auth/register", async (req, res) => {
     users.accounts[account] = {
       account,
       passwordHash: hashPassword(password),
-      credits: 2, // 新用户注册赠送2积分
+      credits: 4, // 新用户注册赠送4积分
       token,
       tokenIssuedAt: now,
       createdAt: now,
@@ -231,7 +231,7 @@ app.post("/api/auth/register", async (req, res) => {
     // 记录赠送积分账本
     insertCreditLog(account, {
       type: "welcome",
-      credits: 2,
+      credits: 4,
       cost: 0,
       code: "new-user-welcome",
       model: "",
