@@ -885,6 +885,25 @@ app.post("/api/generate", async (req, res) => {
     failureStage = "reference_analysis";
     updateGenerationRequest(requestId, { stage: failureStage });
     const referencePlan = await buildReferencePlan(input);
+    failureStage = "content_review";
+    updateGenerationRequest(requestId, { stage: failureStage });
+    const reviewChannel = getContentReviewChannel();
+    if (input.model === "forge" && reviewChannel && clean(process.env.FORGE_CONTENT_REVIEW_ENABLED || "true") !== "false") {
+      const verdict = await checkForgeContentReview(input, referencePlan);
+      req.auditDetail.contentReview = {
+        provider: reviewChannel.provider,
+        pass: Boolean(verdict?.pass),
+        level: verdict?.level || "",
+        category: verdict?.category || "",
+        reason: verdict?.reason || ""
+      };
+      console.log(
+        `[content-review] provider=${reviewChannel.provider} account=${user.account} pass=${verdict?.pass} level=${verdict?.level || "n/a"} category=${verdict?.category || "n/a"} reason=${String(verdict?.reason || "").slice(0, 120)}`
+      );
+      if (verdict && verdict.pass === false) {
+        throw new Error("提示词或参考图包含不适合生成的内容，请修改后再试。");
+      }
+    }
     failureStage = "designer_brain";
     updateGenerationRequest(requestId, { stage: failureStage });
     const designerPlan = await buildDesignerPlan(input, referencePlan);
@@ -1458,6 +1477,111 @@ function getDesignerBrainConfig() {
     ),
     model: process.env.DESIGNER_BRAIN_MODEL || process.env.GPT_TEXT_MODEL || "gpt-5.5"
   };
+}
+
+// 内容审核通道选择：优先 GPT 文本（判定更强），无 key 时降级 Agnes 文本（agnes-3.0-flash），都无则跳过（fail-open）。
+function getContentReviewChannel() {
+  const gpt = getDesignerBrainConfig();
+  if (gpt.apiKey) {
+    return { provider: "gpt-text", apiBase: gpt.apiBase, apiKey: gpt.apiKey, model: gpt.model };
+  }
+  const agnesKey = process.env.AGNES_API_KEY || process.env.AGNES_TOKEN;
+  if (agnesKey) {
+    return {
+      provider: "agnes",
+      apiBase: "https://apihub.agnes-ai.com/v1",
+      apiKey: agnesKey,
+      model: process.env.AGNES_PROMPT_TRANSLATION_MODEL || "agnes-3.0-flash"
+    };
+  }
+  return null;
+}
+
+// Forge 通道专属内容审核（语义层）：在静态敏感词表（checkPromptSafety）之后、扣积分之前运行，
+// 用 GPT 文本通道（无 key 时降级 Agnes 文本）判断「用户提示词 + 参考图视觉分析」是否含色情/涉未成年/血腥等违规内容（含委婉语、谐音、暗示）。
+// 仅 forge 模型触发（其他通道依赖其官网自带审核）；上游失败时 fail-open（静态词表仍兜底）。
+// 开关：FORGE_CONTENT_REVIEW_ENABLED=false 可整体停用。
+async function checkForgeContentReview(input, referencePlan) {
+  const cfg = getContentReviewChannel();
+  if (!cfg) {
+    console.warn("[content-review] no review channel configured (GPT text / Agnes key missing); skipping semantic review (static safety list still active)");
+    return { pass: true, level: "skipped", category: "none", reason: "no_review_channel" };
+  }
+
+  const refSummary = String(referencePlan?.summary || "").slice(0, 1200);
+  const userContent = [
+    `【用户提示词】\n${String(input.prompt || "").slice(0, 1200)}`,
+    input.references?.length ? `【参考图数量】${input.references.length} 张` : "",
+    refSummary ? `【参考图视觉分析】\n${refSummary}` : ""
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const systemContent = [
+    "你是 AI 生图网站的内容安全审核员。根据下方输入判断该图片生成请求是否包含违规内容。",
+    "违规类别：sexual_porn（色情/性行为/性器官露骨描写或强烈性暗示）、sexual_minor（涉未成年人的任何色情或性暗示）、violent_gore（血腥/酷刑/残忍暴力）、other（其他明显违反中国法律法规的内容）。",
+    "判定要点：关注委婉语、谐音、代称、外语混杂、通过参考图暗示等间接表达——只要最终画面会呈现违规内容即算违规。正常的美学人体艺术（非色情）、健身、服装展示、商业模特、医疗场景不算色情。",
+    '只输出一个 JSON 对象，不要输出任何其他文字：{"pass":true或false,"level":"clear"或"suspicious"或"violation","category":"none"或上述类别之一,"reason":"不超过20字的判断依据"}',
+    'pass 为 false 当且仅当 level 为 "violation"；level 为 "suspicious"（可疑但无法确定）时 pass 必须为 true，reason 中标注"可疑"。'
+  ].join("\n");
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  try {
+    const response = await fetch(`${cfg.apiBase}/chat/completions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${cfg.apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: [
+          { role: "system", content: systemContent },
+          { role: "user", content: userContent }
+        ],
+        temperature: 0,
+        max_tokens: 200
+      }),
+      signal: controller.signal
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const message = data.error?.message || data.message || `content review failed with ${response.status}`;
+      console.warn(`[content-review] upstream error, failing open: ${message}`);
+      return { pass: true, level: "skipped", category: "none", reason: `upstream_error: ${String(message).slice(0, 120)}` };
+    }
+    const raw = String(data.choices?.[0]?.message?.content || "").trim();
+    const match = raw.match(/\{[\s\S]*\}/);
+    let verdict = null;
+    if (match) {
+      try {
+        verdict = JSON.parse(match[0]);
+      } catch (parseError) {
+        console.warn(`[content-review] unparseable verdict, failing open: ${raw.slice(0, 200)}`);
+      }
+    }
+    if (!verdict || typeof verdict.pass !== "boolean") {
+      console.warn("[content-review] malformed verdict, failing open");
+      return { pass: true, level: "skipped", category: "none", reason: "malformed_verdict" };
+    }
+    return {
+      provider: cfg.provider,
+      pass: Boolean(verdict.pass),
+      level: clean(verdict.level || ""),
+      category: clean(verdict.category || "none"),
+      reason: clean(verdict.reason || "")
+    };
+  } catch (error) {
+    if (error.name === "AbortError") {
+      console.warn("[content-review] timeout after 30s, failing open");
+      return { pass: true, level: "skipped", category: "none", reason: "timeout" };
+    }
+    console.warn(`[content-review] request error, failing open: ${error.message}`);
+    return { pass: true, level: "skipped", category: "none", reason: `request_error: ${String(error.message).slice(0, 120)}` };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function normalizeInput(body) {
