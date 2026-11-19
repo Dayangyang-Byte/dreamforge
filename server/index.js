@@ -105,6 +105,13 @@ const modelRegistry = {
     provider: "nannabanan",
     model: process.env.NANNABANAN_MODEL || "gemini-2.5-flash-image-preview",
     creditCost: Number(process.env.NANNABANAN_CREDIT_COST || 2)
+  },
+  gpt25: {
+    id: "gpt25",
+    label: "GPT Image 2.5",
+    provider: "gpt25",
+    model: process.env.GPT_IMAGE_25_MODEL || "gpt-image-2.5-flare",
+    creditCost: Number(process.env.GPT_IMAGE_25_CREDIT_COST || 5)
   }
 };
 
@@ -3825,6 +3832,8 @@ async function generateImages(prompts, input, modelConfig, context = {}) {
   if (modelConfig.provider === "agnes") return generateWithAgnes(prompts, input, modelConfig);
   if (modelConfig.provider === "openai") return generateWithGptImage(prompts, input, modelConfig, context);
   if (modelConfig.provider === "nannabanan") return generateWithNannabanan(prompts, input, modelConfig, context);
+  if (modelConfig.provider === "gpt25") return generateWithGptImage(prompts, input, modelConfig, context);
+
   if (modelConfig.provider === "nanobanana") return generateWithNanoBanana(prompts, input, modelConfig, context);
   return prompts.map((item, index) => makeMockImage(item, input, index, modelConfig));
 }
@@ -4355,7 +4364,10 @@ function nannabananDimensions(input) {
 }
 
 async function generateWithGptImage(prompts, input, modelConfig, context = {}) {
-  const gptConfigs = getGptImageChannelConfigs(input.gptQuality);
+  const gptConfigs =
+    modelConfig.provider === "gpt25"
+      ? getGptImage25ChannelConfigs(input.gptQuality)
+      : getGptImageChannelConfigs(input.gptQuality);
   if (!gptConfigs.length) {
     throw new Error(`${modelConfig.label} ${String(input.gptQuality || "1k").toUpperCase()} 尚未配置 API Key。`);
   }
@@ -5014,6 +5026,37 @@ function getGptImageChannelConfigs(quality = "1k") {
       apiBase: fallback.apiBase || primary.apiBase,
       model: fallback.model || primary.model,
       responseFormat: fallback.responseFormat || primary.responseFormat
+    });
+  }
+  return dedupeGptImageChannels(channels);
+}
+function getGptImage25Config(quality = "1k") {
+  const tier = normalizeGptQuality(quality);
+  return {
+    tier,
+    apiKey: process.env.GPT_IMAGE_25_API_KEY || "",
+    apiBase: process.env.GPT_IMAGE_25_API_BASE_URL || "",
+    model: process.env.GPT_IMAGE_25_MODEL || "gpt-image-2.5-flare",
+    responseFormat: process.env.GPT_IMAGE_25_RESPONSE_FORMAT || "b64_json"
+  };
+}
+
+function getGptImage25ChannelConfigs(quality = "1k") {
+  const tier = normalizeGptQuality(quality);
+  const channels = [];
+  const primary = { ...getGptImage25Config(quality), channel: "primary" };
+  if (primary.apiKey) channels.push({ ...primary, source: ".env", channelName: "ENV GPT Image 2.5 primary" });
+  const fallbackApiKey = process.env.GPT_IMAGE_25_FALLBACK_API_KEY || "";
+  if (fallbackApiKey) {
+    channels.push({
+      tier,
+      channel: "fallback",
+      source: ".env",
+      channelName: "ENV GPT Image 2.5 fallback",
+      apiKey: fallbackApiKey,
+      apiBase: process.env.GPT_IMAGE_25_FALLBACK_API_BASE_URL || primary.apiBase,
+      model: process.env.GPT_IMAGE_25_FALLBACK_MODEL || primary.model,
+      responseFormat: process.env.GPT_IMAGE_25_FALLBACK_RESPONSE_FORMAT || primary.responseFormat
     });
   }
   return dedupeGptImageChannels(channels);
